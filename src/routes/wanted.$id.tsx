@@ -6,7 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
 import { CommentThread } from "@/components/CommentThread";
-import { BlueprintMap } from "@/components/BlueprintMap";
+import { GoogleMap } from "@/components/GoogleMap";
 import { coordsFor, formatPrice, type Listing, type WantedAd } from "@/lib/marketplace";
 
 export const Route = createFileRoute("/wanted/$id")({
