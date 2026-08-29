@@ -8,10 +8,13 @@ import {
   coordsFor,
   priceShort,
   formatPrice,
+  PROPERTY_KINDS,
   type Deal,
   type Listing,
+  type PropertyKind,
   type WantedAd,
 } from "@/lib/marketplace";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
