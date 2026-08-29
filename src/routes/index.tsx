@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
-import { BlueprintMap, type MapPin } from "@/components/BlueprintMap";
+import { GoogleMap, type MapMarker } from "@/components/GoogleMap";
 import {
   coordsFor,
   priceShort,
