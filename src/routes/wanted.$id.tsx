@@ -214,17 +214,22 @@ function WantedDetail() {
 
               {coords && (
                 <div className="h-64">
-                  <BlueprintMap
-                    pins={[
+                  <GoogleMap
+                    markers={[
                       {
                         id: w.id,
                         lat: coords.lat,
                         lng: coords.lng,
-                        label: w.suburbs[0] ?? "Sydney",
                         kind: "wanted",
+                        title: w.title,
+                        price: `${formatPrice(w.deal, w.budget_cents)}${w.deal === "rent" ? "/wk" : ""}`,
+                        label: w.suburbs.join(" · ") || "Sydney",
+                        link: `/wanted/${w.id}`,
                       },
                     ]}
                     activeId={w.id}
+                    fitBounds={false}
+                    zoom={14}
                   />
                 </div>
               )}
