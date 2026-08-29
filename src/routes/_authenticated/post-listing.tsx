@@ -319,21 +319,8 @@ function PostListing() {
               <div className="mt-3 h-[380px]">
                 <GoogleMap
                   center={pin ?? SYDNEY_CENTRE}
-                  zoom={15}
-                  markers={
-                    pin
-                      ? [
-                          {
-                            id: "new",
-                            lat: pin.lat,
-                            lng: pin.lng,
-                            kind: "offered",
-                            title: form.address || form.suburb,
-                            label: form.suburb,
-                          },
-                        ]
-                      : []
-                  }
+                  zoom={pin ? 16 : 13}
+                  markers={[]}
                   fitBounds={false}
                   onMapClick={(lat, lng) => setPin({ lat, lng })}
                   {...(pin
