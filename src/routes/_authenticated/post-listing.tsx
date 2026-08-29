@@ -336,15 +336,15 @@ function PostListing() {
                   }
                   fitBounds={false}
                   onMapClick={(lat, lng) => setPin({ lat, lng })}
-                  draggableMarker={
-                    pin
-                      ? {
+                  {...(pin
+                    ? {
+                        draggableMarker: {
                           lat: pin.lat,
                           lng: pin.lng,
-                          onDragEnd: (lat, lng) => setPin({ lat, lng }),
-                        }
-                      : undefined
-                  }
+                          onDragEnd: (lat: number, lng: number) => setPin({ lat, lng }),
+                        },
+                      }
+                    : {})}
                 />
               </div>
             </div>
