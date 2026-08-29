@@ -14,9 +14,6 @@ import {
 } from "@/lib/marketplace";
 
 export const Route = createFileRoute("/")({
-  validateSearch: (search: { mode?: string }) => ({
-    mode: search.mode === "wanted" ? ("wanted" as const) : ("properties" as const),
-  }),
   head: () => ({
     meta: [
       { title: "Tidewater — Sydney property, both ways" },
@@ -37,7 +34,7 @@ export const Route = createFileRoute("/")({
 });
 
 function Browse() {
-  const { mode } = Route.useSearch();
+  const [mode, setMode] = useState<"properties" | "wanted">("properties");
   const navigate = useNavigate();
   const [deal, setDeal] = useState<Deal | "all">("all");
   const [query, setQuery] = useState("");
