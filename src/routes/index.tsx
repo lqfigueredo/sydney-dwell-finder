@@ -351,18 +351,7 @@ function Browse() {
 
         <section className="col-span-12 lg:col-span-7 xl:col-span-8">
           <div className="h-[520px] lg:h-[calc(100vh-200px)]">
-            <BlueprintMap
-              pins={pins}
-              activeId={activeId}
-              onSelect={(id) => {
-                setActiveId(id);
-                void navigate(
-                  mode === "wanted"
-                    ? { to: "/wanted/$id", params: { id } }
-                    : { to: "/listings/$id", params: { id } },
-                );
-              }}
-            />
+            <GoogleMap markers={markers} activeId={activeId} fitBounds />
           </div>
         </section>
       </main>
