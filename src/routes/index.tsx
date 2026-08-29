@@ -176,7 +176,7 @@ function Browse() {
 
   return (
     <div className="min-h-screen bg-canvas text-ink">
-      <AppHeader mode={mode} />
+      <AppHeader mode={mode} onMode={setMode} />
 
       <div className="mx-auto max-w-[1440px] px-6 pt-5">
         <div className="flex flex-wrap items-center gap-2 rounded-xl bg-canvas p-2 ring-1 ring-ink/10">
