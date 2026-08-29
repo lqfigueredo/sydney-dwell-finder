@@ -2,13 +2,36 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 
-export function AppHeader({ mode }: { mode?: "properties" | "wanted" }) {
+type Mode = "properties" | "wanted";
+
+export function AppHeader({ mode, onMode }: { mode?: Mode; onMode?: (m: Mode) => void }) {
   const { user } = useAuth();
   const navigate = useNavigate();
 
   const signOut = async () => {
     await supabase.auth.signOut();
     void navigate({ to: "/" });
+  };
+
+  const tab = (m: Mode, dot: string, label: string) => {
+    const cls = `flex items-center gap-2 rounded-[8px] px-3.5 py-1.5 text-sm font-medium ${
+      mode === m ? "bg-canvas text-ink ring-1 ring-ink/10" : "text-ink/50"
+    }`;
+    const inner = (
+      <>
+        <span className={`size-2 rounded-full ${dot}`} />
+        {label}
+      </>
+    );
+    return onMode ? (
+      <button className={cls} onClick={() => onMode(m)}>
+        {inner}
+      </button>
+    ) : (
+      <Link to="/" className={cls}>
+        {inner}
+      </Link>
+    );
   };
 
   return (
@@ -25,26 +48,8 @@ export function AppHeader({ mode }: { mode?: "properties" | "wanted" }) {
         </Link>
 
         <div className="ml-2 flex rounded-[10px] bg-ink/5 p-1 ring-1 ring-ink/10">
-          <Link
-            to="/"
-            search={{ mode: "properties" }}
-            className={`flex items-center gap-2 rounded-[8px] px-3.5 py-1.5 text-sm font-medium ${
-              mode === "properties" ? "bg-canvas text-ink ring-1 ring-ink/10" : "text-ink/50"
-            }`}
-          >
-            <span className="size-2 rounded-full bg-accent" />
-            Properties
-          </Link>
-          <Link
-            to="/"
-            search={{ mode: "wanted" }}
-            className={`flex items-center gap-2 rounded-[8px] px-3.5 py-1.5 text-sm font-medium ${
-              mode === "wanted" ? "bg-canvas text-ink ring-1 ring-ink/10" : "text-ink/50"
-            }`}
-          >
-            <span className="size-2 rounded-full bg-brand" />
-            Wanted
-          </Link>
+          {tab("properties", "bg-accent", "Properties")}
+          {tab("wanted", "bg-brand", "Wanted")}
         </div>
 
         <div className="ml-auto flex items-center gap-2 text-sm">
@@ -79,7 +84,6 @@ export function AppHeader({ mode }: { mode?: "properties" | "wanted" }) {
               </Link>
               <Link
                 to="/auth"
-                search={{ tab: "signup" }}
                 className="rounded-[8px] bg-brand px-3.5 py-1.5 font-medium text-brand-foreground ring-1 ring-brand/25 hover:bg-brand/90"
               >
                 Create account
