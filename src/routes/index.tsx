@@ -101,12 +101,14 @@ function Browse() {
         (l) =>
           (deal === "all" || l.deal === deal) &&
           l.bedrooms >= beds &&
+          inPrice(l.price_cents) &&
+          (types.length === 0 || types.includes(l.property_type)) &&
           (!q ||
             l.title.toLowerCase().includes(q) ||
             l.suburb.toLowerCase().includes(q) ||
             l.address.toLowerCase().includes(q)),
       ),
-    [listings.data, deal, beds, q],
+    [listings.data, deal, beds, q, minCents, maxCents, types],
   );
 
   const visibleWanted = useMemo(
@@ -115,12 +117,17 @@ function Browse() {
         (w) =>
           (deal === "all" || w.deal === deal) &&
           w.bedrooms_min >= beds &&
+          inPrice(w.budget_cents) &&
+          (types.length === 0 ||
+            w.property_types.length === 0 ||
+            w.property_types.some((t) => types.includes(t))) &&
           (!q ||
             w.title.toLowerCase().includes(q) ||
             w.suburbs.join(" ").toLowerCase().includes(q)),
       ),
-    [wanted.data, deal, beds, q],
+    [wanted.data, deal, beds, q, minCents, maxCents, types],
   );
+
 
   const pins: MapPin[] = useMemo(() => {
     const source =
