@@ -317,22 +317,34 @@ function PostListing() {
                 Click the map to move the pin. Scroll to zoom, drag to pan.
               </p>
               <div className="mt-3 h-[380px]">
-                <BlueprintMap
-                  pins={
+                <GoogleMap
+                  center={pin ?? SYDNEY_CENTRE}
+                  zoom={15}
+                  markers={
                     pin
                       ? [
                           {
                             id: "new",
                             lat: pin.lat,
                             lng: pin.lng,
-                            label: form.suburb,
                             kind: "offered",
+                            title: form.address || form.suburb,
+                            label: form.suburb,
                           },
                         ]
                       : []
                   }
-                  activeId="new"
-                  onPick={setPin}
+                  fitBounds={false}
+                  onMapClick={(lat, lng) => setPin({ lat, lng })}
+                  draggableMarker={
+                    pin
+                      ? {
+                          lat: pin.lat,
+                          lng: pin.lng,
+                          onDragEnd: (lat, lng) => setPin({ lat, lng }),
+                        }
+                      : undefined
+                  }
                 />
               </div>
             </div>
