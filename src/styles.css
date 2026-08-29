@@ -103,7 +103,6 @@
   --sidebar-ring: var(--brand);
 }
 
-
 @layer base {
   * {
     border-color: var(--color-border);
@@ -112,5 +111,27 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
   }
 }
+
+@utility blueprint-grid {
+  background-image:
+    radial-gradient(color-mix(in oklab, var(--ink) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(color-mix(in oklab, var(--ink) 5%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in oklab, var(--ink) 5%, transparent) 1px, transparent 1px);
+  background-size:
+    22px 22px,
+    110px 110px,
+    110px 110px;
+}
+
