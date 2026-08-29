@@ -42,7 +42,30 @@ function Browse() {
   const [deal, setDeal] = useState<Deal | "all">("all");
   const [query, setQuery] = useState("");
   const [beds, setBeds] = useState(0);
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [types, setTypes] = useState<PropertyKind[]>([]);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+
+  const minCents = minPrice ? Number(minPrice) * 100 : null;
+  const maxCents = maxPrice ? Number(maxPrice) * 100 : null;
+  const inPrice = (cents: number) =>
+    (minCents == null || cents >= minCents) && (maxCents == null || cents <= maxCents);
+
+  const toggleType = (t: PropertyKind) =>
+    setTypes((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
+
+  const advancedCount =
+    (minPrice ? 1 : 0) + (maxPrice ? 1 : 0) + (types.length ? 1 : 0) + (beds > 0 ? 1 : 0);
+
+  const resetAdvanced = () => {
+    setMinPrice("");
+    setMaxPrice("");
+    setTypes([]);
+    setBeds(0);
+  };
+
 
   const listings = useQuery({
     queryKey: ["listings"],
