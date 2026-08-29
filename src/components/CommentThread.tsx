@@ -45,7 +45,10 @@ export function CommentThread({ target }: { target: { listingId?: string; wanted
       listing_id: target.listingId ?? null,
       wanted_ad_id: target.wantedId ?? null,
     });
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     setBody("");
     void qc.invalidateQueries({ queryKey: key });
   };
