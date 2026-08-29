@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ListingsIdRouteImport } from './routes/listings.$id'
+import { Route as WantedIdRouteImport } from './routes/wanted.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,44 @@ const ListingsIdRoute = ListingsIdRouteImport.update({
   path: '/listings/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const WantedIdRoute = WantedIdRouteImport.update({
+  id: '/wanted/$id',
+  path: '/wanted/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/listings/$id': typeof ListingsIdRoute
+  '/wanted/$id': typeof WantedIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/listings/$id': typeof ListingsIdRoute
+  '/wanted/$id': typeof WantedIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/listings/$id': typeof ListingsIdRoute
+  '/wanted/$id': typeof WantedIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/listings/$id'
+  fullPaths: '/' | '/auth' | '/listings/$id' | '/wanted/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/listings/$id'
-  id: '__root__' | '/' | '/auth' | '/listings/$id'
+  to: '/' | '/auth' | '/listings/$id' | '/wanted/$id'
+  id: '__root__' | '/' | '/auth' | '/listings/$id' | '/wanted/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
   ListingsIdRoute: typeof ListingsIdRoute
+  WantedIdRoute: typeof WantedIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ListingsIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/wanted/$id': {
+      id: '/wanted/$id'
+      path: '/wanted/$id'
+      fullPath: '/wanted/$id'
+      preLoaderRoute: typeof WantedIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
   ListingsIdRoute: ListingsIdRoute,
+  WantedIdRoute: WantedIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
