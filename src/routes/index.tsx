@@ -41,6 +41,7 @@ function Browse() {
   const [mode, setMode] = useState<"properties" | "wanted">("properties");
   const navigate = useNavigate();
   const [deal, setDeal] = useState<Deal | "all">("all");
+  const [sort, setSort] = useState<"newest" | "price-asc" | "price-desc">("newest");
   const [query, setQuery] = useState("");
   const [beds, setBeds] = useState(0);
   const [minPrice, setMinPrice] = useState("");
@@ -96,38 +97,50 @@ function Browse() {
 
   const q = query.trim().toLowerCase();
 
-  const visibleListings = useMemo(
-    () =>
-      (listings.data ?? []).filter(
-        (l) =>
-          (deal === "all" || l.deal === deal) &&
-          l.bedrooms >= beds &&
-          inPrice(l.price_cents) &&
-          (types.length === 0 || types.includes(l.property_type)) &&
-          (!q ||
-            l.title.toLowerCase().includes(q) ||
-            l.suburb.toLowerCase().includes(q) ||
-            l.address.toLowerCase().includes(q)),
-      ),
-    [listings.data, deal, beds, q, minCents, maxCents, types],
-  );
+  const visibleListings = useMemo(() => {
+    const filtered = (listings.data ?? []).filter(
+      (l) =>
+        (deal === "all" || l.deal === deal) &&
+        l.bedrooms >= beds &&
+        inPrice(l.price_cents) &&
+        (types.length === 0 || types.includes(l.property_type)) &&
+        (!q ||
+          l.title.toLowerCase().includes(q) ||
+          l.suburb.toLowerCase().includes(q) ||
+          l.address.toLowerCase().includes(q)),
+    );
+    const sorted = [...filtered];
+    if (sort === "price-asc") sorted.sort((a, b) => a.price_cents - b.price_cents);
+    else if (sort === "price-desc") sorted.sort((a, b) => b.price_cents - a.price_cents);
+    else
+      sorted.sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
+    return sorted;
+  }, [listings.data, deal, beds, q, minCents, maxCents, types, sort]);
 
-  const visibleWanted = useMemo(
-    () =>
-      (wanted.data ?? []).filter(
-        (w) =>
-          (deal === "all" || w.deal === deal) &&
-          w.bedrooms_min >= beds &&
-          inPrice(w.budget_cents) &&
-          (types.length === 0 ||
-            w.property_types.length === 0 ||
-            w.property_types.some((t) => types.includes(t))) &&
-          (!q ||
-            w.title.toLowerCase().includes(q) ||
-            w.suburbs.join(" ").toLowerCase().includes(q)),
-      ),
-    [wanted.data, deal, beds, q, minCents, maxCents, types],
-  );
+  const visibleWanted = useMemo(() => {
+    const filtered = (wanted.data ?? []).filter(
+      (w) =>
+        (deal === "all" || w.deal === deal) &&
+        w.bedrooms_min >= beds &&
+        inPrice(w.budget_cents) &&
+        (types.length === 0 ||
+          w.property_types.length === 0 ||
+          w.property_types.some((t) => types.includes(t))) &&
+        (!q ||
+          w.title.toLowerCase().includes(q) ||
+          w.suburbs.join(" ").toLowerCase().includes(q)),
+    );
+    const sorted = [...filtered];
+    if (sort === "price-asc") sorted.sort((a, b) => a.budget_cents - b.budget_cents);
+    else if (sort === "price-desc") sorted.sort((a, b) => b.budget_cents - a.budget_cents);
+    else
+      sorted.sort(
+        (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
+      );
+    return sorted;
+  }, [wanted.data, deal, beds, q, minCents, maxCents, types, sort]);
 
 
   const pins: MapPin[] = useMemo(() => {
