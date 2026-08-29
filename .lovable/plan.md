@@ -12,7 +12,7 @@ Swap the custom Blueprint SVG map for a real interactive Google Map across SydHu
 2. **New `GoogleMap` component** (`src/components/GoogleMap.tsx`)
    - Loads the Maps JS API asynchronously (`loading=async` + `callback`), keeping SSR safe.
    - Classic `google.maps.Marker` pins (no mapId needed): teal pins for offered properties, sand pins for wanted ads.
-   - Click a pin → info window with title, price, suburb, a link to the Tidewater detail page, and a **"Get directions"** button that opens Google Maps directions (`google.com/maps/dir/?api=1&destination=lat,lng`) in a new tab.
+   - Click a pin → info window with title, price, suburb, a link to the SydHub detail page, and a **"Get directions"** button that opens Google Maps directions (`google.com/maps/dir/?api=1&destination=lat,lng`) in a new tab.
    - Map styling kept subtle so pins stay readable; Blueprint Grid frame/labels kept around the map to preserve the visual direction.
 
 3. **Replace `BlueprintMap` in all 4 places**
