@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedPostListingRouteImport } from './routes/_authenticated/post-listing'
+import { Route as AuthenticatedPostWantedRouteImport } from './routes/_authenticated/post-wanted'
 import { Route as ListingsIdRouteImport } from './routes/listings.$id'
 import { Route as WantedIdRouteImport } from './routes/wanted.$id'
 
@@ -36,6 +37,11 @@ const AuthenticatedPostListingRoute =
     path: '/post-listing',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedPostWantedRoute = AuthenticatedPostWantedRouteImport.update({
+  id: '/post-wanted',
+  path: '/post-wanted',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ListingsIdRoute = ListingsIdRouteImport.update({
   id: '/listings/$id',
   path: '/listings/$id',
@@ -51,6 +57,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/post-listing': typeof AuthenticatedPostListingRoute
+  '/post-wanted': typeof AuthenticatedPostWantedRoute
   '/listings/$id': typeof ListingsIdRoute
   '/wanted/$id': typeof WantedIdRoute
 }
@@ -58,6 +65,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/post-listing': typeof AuthenticatedPostListingRoute
+  '/post-wanted': typeof AuthenticatedPostWantedRoute
   '/listings/$id': typeof ListingsIdRoute
   '/wanted/$id': typeof WantedIdRoute
 }
@@ -67,20 +75,34 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/post-listing': typeof AuthenticatedPostListingRoute
+  '/_authenticated/post-wanted': typeof AuthenticatedPostWantedRoute
   '/listings/$id': typeof ListingsIdRoute
   '/wanted/$id': typeof WantedIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/post-listing' | '/listings/$id' | '/wanted/$id'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/post-listing'
+    | '/post-wanted'
+    | '/listings/$id'
+    | '/wanted/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/post-listing' | '/listings/$id' | '/wanted/$id'
+  to:
+    | '/'
+    | '/auth'
+    | '/post-listing'
+    | '/post-wanted'
+    | '/listings/$id'
+    | '/wanted/$id'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/_authenticated/post-listing'
+    | '/_authenticated/post-wanted'
     | '/listings/$id'
     | '/wanted/$id'
   fileRoutesById: FileRoutesById
@@ -123,6 +145,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPostListingRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/post-wanted': {
+      id: '/_authenticated/post-wanted'
+      path: '/post-wanted'
+      fullPath: '/post-wanted'
+      preLoaderRoute: typeof AuthenticatedPostWantedRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/listings/$id': {
       id: '/listings/$id'
       path: '/listings/$id'
@@ -142,10 +171,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedPostListingRoute: typeof AuthenticatedPostListingRoute
+  AuthenticatedPostWantedRoute: typeof AuthenticatedPostWantedRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedPostListingRoute: AuthenticatedPostListingRoute,
+  AuthenticatedPostWantedRoute: AuthenticatedPostWantedRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
