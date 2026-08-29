@@ -228,8 +228,10 @@ export function GoogleMap({
     // Open the active marker's info window.
     if (activeId) {
       const idx = markers.findIndex((m) => m.id === activeId);
-      if (idx >= 0) {
-        const m = markers[idx];
+      const activeMarker = markers[idx];
+      const markerInstance = markersRef.current[idx];
+      if (activeMarker && markerInstance) {
+        const m = activeMarker;
         const content = `
           <div style="font-family: Figtree, ui-sans-serif, system-ui, sans-serif; color: #123B3A; min-width: 160px;">
             ${m.title ? `<div style="font-weight:700; font-size:14px; margin-bottom:4px; line-height:1.25;">${escapeHtml(m.title)}</div>` : ""}
@@ -241,9 +243,8 @@ export function GoogleMap({
             </div>
           </div>
         `;
-        const marker = markersRef.current[idx];
         infoWindowRef.current.setContent(content);
-        infoWindowRef.current.open(map, marker);
+        infoWindowRef.current.open(map, markerInstance);
       }
     }
   }, [ready, markers, draggableMarker, activeId, fitBounds, center, zoom]);
