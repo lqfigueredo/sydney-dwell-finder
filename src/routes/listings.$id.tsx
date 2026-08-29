@@ -3,7 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { CommentThread } from "@/components/CommentThread";
-import { BlueprintMap } from "@/components/BlueprintMap";
+import { GoogleMap } from "@/components/GoogleMap";
 import { formatPrice, priceSuffix, type Listing } from "@/lib/marketplace";
 
 export const Route = createFileRoute("/listings/$id")({
