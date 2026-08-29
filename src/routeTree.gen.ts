@@ -10,7 +10,9 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedPostListingRouteImport } from './routes/_authenticated/post-listing'
 import { Route as ListingsIdRouteImport } from './routes/listings.$id'
 import { Route as WantedIdRouteImport } from './routes/wanted.$id'
 
@@ -19,11 +21,21 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedPostListingRoute =
+  AuthenticatedPostListingRouteImport.update({
+    id: '/post-listing',
+    path: '/post-listing',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const ListingsIdRoute = ListingsIdRouteImport.update({
   id: '/listings/$id',
   path: '/listings/$id',
@@ -38,32 +50,44 @@ const WantedIdRoute = WantedIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/post-listing': typeof AuthenticatedPostListingRoute
   '/listings/$id': typeof ListingsIdRoute
   '/wanted/$id': typeof WantedIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/post-listing': typeof AuthenticatedPostListingRoute
   '/listings/$id': typeof ListingsIdRoute
   '/wanted/$id': typeof WantedIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/post-listing': typeof AuthenticatedPostListingRoute
   '/listings/$id': typeof ListingsIdRoute
   '/wanted/$id': typeof WantedIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/listings/$id' | '/wanted/$id'
+  fullPaths: '/' | '/auth' | '/post-listing' | '/listings/$id' | '/wanted/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/listings/$id' | '/wanted/$id'
-  id: '__root__' | '/' | '/auth' | '/listings/$id' | '/wanted/$id'
+  to: '/' | '/auth' | '/post-listing' | '/listings/$id' | '/wanted/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/_authenticated/post-listing'
+    | '/listings/$id'
+    | '/wanted/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   ListingsIdRoute: typeof ListingsIdRoute
   WantedIdRoute: typeof WantedIdRoute
@@ -78,12 +102,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/post-listing': {
+      id: '/_authenticated/post-listing'
+      path: '/post-listing'
+      fullPath: '/post-listing'
+      preLoaderRoute: typeof AuthenticatedPostListingRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/listings/$id': {
       id: '/listings/$id'
@@ -102,8 +140,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedPostListingRoute: typeof AuthenticatedPostListingRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedPostListingRoute: AuthenticatedPostListingRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   ListingsIdRoute: ListingsIdRoute,
   WantedIdRoute: WantedIdRoute,
