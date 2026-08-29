@@ -143,24 +143,33 @@ function Browse() {
   }, [wanted.data, deal, beds, q, minCents, maxCents, types, sort]);
 
 
-  const pins: MapPin[] = useMemo(() => {
+  const markers: MapMarker[] = useMemo(() => {
     const source =
       mode === "wanted"
-        ? visibleWanted.map((w) => ({
-            id: w.id,
-            coords: coordsFor(w),
-            label: priceShort(w.deal, w.budget_cents),
-            kind: "wanted" as const,
-          }))
+        ? visibleWanted.map((w) => {
+            const coords = coordsFor(w);
+            return {
+              id: w.id,
+              lat: coords?.lat ?? 0,
+              lng: coords?.lng ?? 0,
+              kind: "wanted" as const,
+              title: w.title,
+              price: priceShort(w.deal, w.budget_cents),
+              label: w.suburbs.join(" · ") || "Sydney",
+              link: `/wanted/${w.id}`,
+            };
+          })
         : visibleListings.map((l) => ({
             id: l.id,
-            coords: coordsFor(l),
-            label: priceShort(l.deal, l.price_cents),
+            lat: l.lat ?? 0,
+            lng: l.lng ?? 0,
             kind: "offered" as const,
+            title: l.title,
+            price: priceShort(l.deal, l.price_cents),
+            label: `${propertyKindLabel(l.property_type)} · ${l.suburb}`,
+            link: `/listings/${l.id}`,
           }));
-    return source
-      .filter((s) => s.coords)
-      .map((s) => ({ id: s.id, label: s.label, kind: s.kind, ...s.coords! }));
+    return source.filter((s) => s.lat !== 0 && s.lng !== 0);
   }, [mode, visibleListings, visibleWanted]);
 
   const loading = mode === "wanted" ? wanted.isLoading : listings.isLoading;
