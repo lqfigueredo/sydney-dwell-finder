@@ -77,16 +77,27 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "Tidewater — Sydney property, both ways" },
+      {
+        name: "description",
+        content:
+          "Map-first Sydney property marketplace: browse listings, or post what you want and let owners apply to you.",
+      },
+      { property: "og:title", content: "Tidewater — Sydney property, both ways" },
+      {
+        property: "og:description",
+        content: "Browse Sydney listings on a live map, or post a wanted ad and get offers.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+      {
+        rel: "stylesheet",
+        href: "https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&family=Figtree:wght@400;500;600&display=swap",
+      },
       {
         rel: "stylesheet",
         href: appCss,
