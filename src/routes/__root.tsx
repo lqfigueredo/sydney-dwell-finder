@@ -78,13 +78,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Tidewater — Sydney property, both ways" },
+      { title: "SydHub — Sydney property, both ways" },
       {
         name: "description",
         content:
           "Map-first Sydney property marketplace: browse listings, or post what you want and let owners apply to you.",
       },
-      { property: "og:title", content: "Tidewater — Sydney property, both ways" },
+      { property: "og:title", content: "SydHub — Sydney property, both ways" },
       {
         property: "og:description",
         content: "Browse Sydney listings on a live map, or post a wanted ad and get offers.",

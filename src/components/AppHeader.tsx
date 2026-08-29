@@ -39,9 +39,9 @@ export function AppHeader({ mode, onMode }: { mode?: Mode; onMode?: (m: Mode) =>
       <div className="mx-auto flex max-w-[1440px] flex-wrap items-center gap-4 px-6 py-3">
         <Link to="/" className="flex items-center gap-2.5">
           <span className="grid size-8 place-items-center rounded-[10px] bg-brand ring-1 ring-brand/20">
-            <span className="font-display text-sm font-semibold text-brand-foreground">T</span>
+            <span className="font-display text-sm font-semibold text-brand-foreground">S</span>
           </span>
-          <span className="font-display text-[15px] font-semibold tracking-tight">Tidewater</span>
+          <span className="font-display text-[15px] font-semibold tracking-tight">SydHub</span>
           <span className="mt-0.5 hidden text-[11px] font-medium tracking-wide text-ink/45 sm:inline">
             Sydney
           </span>

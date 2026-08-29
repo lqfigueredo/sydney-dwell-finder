@@ -7,10 +7,10 @@ import { AppHeader } from "@/components/AppHeader";
 export const Route = createFileRoute("/reset-password")({
   head: () => ({
     meta: [
-      { title: "Set a new password — Tidewater Sydney" },
-      { name: "description", content: "Choose a new password for your Tidewater account." },
-      { property: "og:title", content: "Set a new password — Tidewater Sydney" },
-      { property: "og:description", content: "Choose a new password for your Tidewater account." },
+      { title: "Set a new password — SydHub Sydney" },
+      { name: "description", content: "Choose a new password for your SydHub account." },
+      { property: "og:title", content: "Set a new password — SydHub Sydney" },
+      { property: "og:description", content: "Choose a new password for your SydHub account." },
       { name: "robots", content: "noindex" },
     ],
   }),

@@ -17,13 +17,13 @@ import {
 export const Route = createFileRoute("/_authenticated/post-listing")({
   head: () => ({
     meta: [
-      { title: "List a property — Tidewater Sydney" },
+      { title: "List a property — SydHub Sydney" },
       {
         name: "description",
         content:
-          "Publish a Sydney rental or sale with photos, features and a pin on the Tidewater map.",
+          "Publish a Sydney rental or sale with photos, features and a pin on the SydHub map.",
       },
-      { property: "og:title", content: "List a property — Tidewater Sydney" },
+      { property: "og:title", content: "List a property — SydHub Sydney" },
       {
         property: "og:description",
         content: "Publish a Sydney rental or sale with photos and a map pin.",

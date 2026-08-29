@@ -20,13 +20,13 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Tidewater — Sydney property, both ways" },
+      { title: "SydHub — Sydney property, both ways" },
       {
         name: "description",
         content:
           "Browse Sydney rentals and sales on a live map, or post what you're looking for and let owners apply to you.",
       },
-      { property: "og:title", content: "Tidewater — Sydney property, both ways" },
+      { property: "og:title", content: "SydHub — Sydney property, both ways" },
       {
         property: "og:description",
         content:

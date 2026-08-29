@@ -8,13 +8,13 @@ import { AppHeader } from "@/components/AppHeader";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
-      { title: "Log in or create an account — Tidewater Sydney" },
+      { title: "Log in or create an account — SydHub Sydney" },
       {
         name: "description",
         content:
-          "Sign in to Tidewater to list a Sydney property, post what you're looking for, and apply to wanted ads.",
+          "Sign in to SydHub to list a Sydney property, post what you're looking for, and apply to wanted ads.",
       },
-      { property: "og:title", content: "Log in or create an account — Tidewater Sydney" },
+      { property: "og:title", content: "Log in or create an account — SydHub Sydney" },
       {
         property: "og:description",
         content: "Sign in to list a Sydney property or post what you're looking for.",
@@ -90,7 +90,7 @@ function AuthPage() {
         <div className="col-span-12 lg:col-span-7">
           <div className="blueprint-grid h-full min-h-[380px] rounded-xl p-8 ring-1 ring-ink/10">
             <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-ink/40">
-              Tidewater Sydney
+              SydHub Sydney
             </p>
             <h1 className="mt-3 max-w-md font-display text-3xl font-semibold">
               One account, both sides of the market.

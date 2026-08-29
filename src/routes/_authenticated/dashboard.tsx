@@ -9,13 +9,13 @@ import { formatPrice, priceShort, type Listing, type WantedAd } from "@/lib/mark
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
-      { title: "My activity — Tidewater Sydney" },
+      { title: "My activity — SydHub Sydney" },
       {
         name: "description",
         content:
           "Manage your Sydney listings, wanted ads and the applications flowing between them.",
       },
-      { property: "og:title", content: "My activity — Tidewater Sydney" },
+      { property: "og:title", content: "My activity — SydHub Sydney" },
       {
         property: "og:description",
         content: "Manage your listings, wanted ads and applications.",

@@ -12,13 +12,13 @@ import { coordsFor, formatPrice, type Listing, type WantedAd } from "@/lib/marke
 export const Route = createFileRoute("/wanted/$id")({
   head: () => ({
     meta: [
-      { title: "Wanted ad — Tidewater Sydney" },
+      { title: "Wanted ad — SydHub Sydney" },
       {
         name: "description",
         content:
           "A Sydney seeker's brief: budget, suburbs and must-haves. Owners can apply with a matching property.",
       },
-      { property: "og:title", content: "Wanted ad — Tidewater Sydney" },
+      { property: "og:title", content: "Wanted ad — SydHub Sydney" },
       {
         property: "og:description",
         content: "See what this Sydney seeker wants and offer them a matching property.",

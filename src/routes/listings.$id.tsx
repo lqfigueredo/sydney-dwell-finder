@@ -9,13 +9,13 @@ import { formatPrice, priceSuffix, type Listing } from "@/lib/marketplace";
 export const Route = createFileRoute("/listings/$id")({
   head: () => ({
     meta: [
-      { title: "Property detail — Tidewater Sydney" },
+      { title: "Property detail — SydHub Sydney" },
       {
         name: "description",
         content:
-          "Photos, features, location and neighbour comments for this Sydney property on Tidewater.",
+          "Photos, features, location and neighbour comments for this Sydney property on SydHub.",
       },
-      { property: "og:title", content: "Property detail — Tidewater Sydney" },
+      { property: "og:title", content: "Property detail — SydHub Sydney" },
       {
         property: "og:description",
         content: "Photos, features, location and comments for this Sydney property.",
