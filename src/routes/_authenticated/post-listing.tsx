@@ -4,11 +4,12 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
-import { BlueprintMap } from "@/components/BlueprintMap";
+import { GoogleMap } from "@/components/GoogleMap";
 import {
   PROPERTY_KINDS,
   SUBURB_COORDS,
   SUBURB_NAMES,
+  SYDNEY_CENTRE,
   type Deal,
   type PropertyKind,
 } from "@/lib/marketplace";
