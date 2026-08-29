@@ -114,7 +114,7 @@ function PostListing() {
       if (files.length) {
         const urls = await uploadPhotos(data.id);
         if (urls.length) {
-          await supabase.from("listings").update({ cover_url: urls[0] }).eq("id", data.id);
+          await supabase.from("listings").update({ cover_url: urls[0] ?? null }).eq("id", data.id);
           await supabase
             .from("listing_photos")
             .insert(urls.map((url, i) => ({ listing_id: data.id, url, sort_order: i })));

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedPostListingRouteImport } from './routes/_authenticated/post-listing'
 import { Route as AuthenticatedPostWantedRouteImport } from './routes/_authenticated/post-wanted'
 import { Route as ListingsIdRouteImport } from './routes/listings.$id'
@@ -30,6 +31,11 @@ const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedPostListingRoute =
   AuthenticatedPostListingRouteImport.update({
@@ -56,6 +62,7 @@ const WantedIdRoute = WantedIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/post-listing': typeof AuthenticatedPostListingRoute
   '/post-wanted': typeof AuthenticatedPostWantedRoute
   '/listings/$id': typeof ListingsIdRoute
@@ -64,6 +71,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/post-listing': typeof AuthenticatedPostListingRoute
   '/post-wanted': typeof AuthenticatedPostWantedRoute
   '/listings/$id': typeof ListingsIdRoute
@@ -74,6 +82,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/post-listing': typeof AuthenticatedPostListingRoute
   '/_authenticated/post-wanted': typeof AuthenticatedPostWantedRoute
   '/listings/$id': typeof ListingsIdRoute
@@ -84,6 +93,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/dashboard'
     | '/post-listing'
     | '/post-wanted'
     | '/listings/$id'
@@ -92,6 +102,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/dashboard'
     | '/post-listing'
     | '/post-wanted'
     | '/listings/$id'
@@ -101,6 +112,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/_authenticated/dashboard'
     | '/_authenticated/post-listing'
     | '/_authenticated/post-wanted'
     | '/listings/$id'
@@ -138,6 +150,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/post-listing': {
       id: '/_authenticated/post-listing'
       path: '/post-listing'
@@ -170,11 +189,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedPostListingRoute: typeof AuthenticatedPostListingRoute
   AuthenticatedPostWantedRoute: typeof AuthenticatedPostWantedRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedPostListingRoute: AuthenticatedPostListingRoute,
   AuthenticatedPostWantedRoute: AuthenticatedPostWantedRoute,
 }
