@@ -9,6 +9,7 @@ import {
   priceShort,
   formatPrice,
   PROPERTY_KINDS,
+  propertyKindLabel,
   type Deal,
   type Listing,
   type PropertyKind,

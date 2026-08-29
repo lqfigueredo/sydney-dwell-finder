@@ -50,6 +50,7 @@ function PostListing() {
     suburb: "Surry Hills",
     postcode: "",
     price: "",
+    property_type: "apartment" as PropertyKind,
     bedrooms: 2,
     bathrooms: 1,
     parking: 0,
@@ -100,6 +101,7 @@ function PostListing() {
           lat: pin?.lat ?? null,
           lng: pin?.lng ?? null,
           price_cents: priceCents,
+          property_type: form.property_type,
           bedrooms: form.bedrooms,
           bathrooms: form.bathrooms,
           parking: form.parking,
@@ -203,6 +205,20 @@ function PostListing() {
                   placeholder={form.deal === "rent" ? "780" : "1250000"}
                   required
                 />
+                <label className="block">
+                  <Label>Property type</Label>
+                  <select
+                    value={form.property_type}
+                    onChange={(e) => set("property_type", e.target.value as PropertyKind)}
+                    className="mt-1 w-full rounded-[10px] bg-ink/[0.04] px-3 py-2 text-sm outline-none ring-1 ring-transparent focus:ring-brand/40"
+                  >
+                    {PROPERTY_KINDS.map((k) => (
+                      <option key={k.value} value={k.value}>
+                        {k.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
                 <div className="grid grid-cols-4 gap-3">
                   <Field
                     label="Beds"
