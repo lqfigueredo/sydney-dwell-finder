@@ -4,7 +4,13 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
-import { SUBURB_COORDS, SUBURB_NAMES, type Deal } from "@/lib/marketplace";
+import {
+  PROPERTY_KINDS,
+  SUBURB_COORDS,
+  SUBURB_NAMES,
+  type Deal,
+  type PropertyKind,
+} from "@/lib/marketplace";
 
 export const Route = createFileRoute("/_authenticated/post-wanted")({
   head: () => ({
@@ -47,6 +53,7 @@ function PostWanted() {
   const [bedsMin, setBedsMin] = useState(1);
   const [moveIn, setMoveIn] = useState("");
   const [mustHaves, setMustHaves] = useState<string[]>([]);
+  const [propertyTypes, setPropertyTypes] = useState<PropertyKind[]>([]);
   const [notes, setNotes] = useState("");
 
   const toggle = (list: string[], set: (v: string[]) => void, value: string) =>
@@ -68,6 +75,7 @@ function PostWanted() {
           budget_cents: Math.round(Number(budget || 0) * 100),
           bedrooms_min: bedsMin,
           must_haves: mustHaves,
+          property_types: propertyTypes,
           move_in_date: moveIn || null,
           notes,
           lat: coords?.lat ?? null,
@@ -140,6 +148,34 @@ function PostWanted() {
                         }`}
                       >
                         {s}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div>
+                <Label>Property types you'd consider</Label>
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {PROPERTY_KINDS.map((k) => {
+                    const on = propertyTypes.includes(k.value);
+                    return (
+                      <button
+                        key={k.value}
+                        type="button"
+                        aria-pressed={on}
+                        onClick={() =>
+                          setPropertyTypes((prev) =>
+                            on ? prev.filter((x) => x !== k.value) : [...prev, k.value],
+                          )
+                        }
+                        className={`rounded-full px-3 py-1.5 text-[12px] font-medium ring-1 ${
+                          on
+                            ? "bg-brand/10 text-brand ring-brand/30"
+                            : "bg-ink/[0.03] text-ink/60 ring-ink/10"
+                        }`}
+                      >
+                        {k.label}
                       </button>
                     );
                   })}

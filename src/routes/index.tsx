@@ -8,10 +8,14 @@ import {
   coordsFor,
   priceShort,
   formatPrice,
+  PROPERTY_KINDS,
+  propertyKindLabel,
   type Deal,
   type Listing,
+  type PropertyKind,
   type WantedAd,
 } from "@/lib/marketplace";
+
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -39,7 +43,30 @@ function Browse() {
   const [deal, setDeal] = useState<Deal | "all">("all");
   const [query, setQuery] = useState("");
   const [beds, setBeds] = useState(0);
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+  const [types, setTypes] = useState<PropertyKind[]>([]);
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [activeId, setActiveId] = useState<string | null>(null);
+
+  const minCents = minPrice ? Number(minPrice) * 100 : null;
+  const maxCents = maxPrice ? Number(maxPrice) * 100 : null;
+  const inPrice = (cents: number) =>
+    (minCents == null || cents >= minCents) && (maxCents == null || cents <= maxCents);
+
+  const toggleType = (t: PropertyKind) =>
+    setTypes((prev) => (prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]));
+
+  const advancedCount =
+    (minPrice ? 1 : 0) + (maxPrice ? 1 : 0) + (types.length ? 1 : 0) + (beds > 0 ? 1 : 0);
+
+  const resetAdvanced = () => {
+    setMinPrice("");
+    setMaxPrice("");
+    setTypes([]);
+    setBeds(0);
+  };
+
 
   const listings = useQuery({
     queryKey: ["listings"],
@@ -75,12 +102,14 @@ function Browse() {
         (l) =>
           (deal === "all" || l.deal === deal) &&
           l.bedrooms >= beds &&
+          inPrice(l.price_cents) &&
+          (types.length === 0 || types.includes(l.property_type)) &&
           (!q ||
             l.title.toLowerCase().includes(q) ||
             l.suburb.toLowerCase().includes(q) ||
             l.address.toLowerCase().includes(q)),
       ),
-    [listings.data, deal, beds, q],
+    [listings.data, deal, beds, q, minCents, maxCents, types],
   );
 
   const visibleWanted = useMemo(
@@ -89,12 +118,17 @@ function Browse() {
         (w) =>
           (deal === "all" || w.deal === deal) &&
           w.bedrooms_min >= beds &&
+          inPrice(w.budget_cents) &&
+          (types.length === 0 ||
+            w.property_types.length === 0 ||
+            w.property_types.some((t) => types.includes(t))) &&
           (!q ||
             w.title.toLowerCase().includes(q) ||
             w.suburbs.join(" ").toLowerCase().includes(q)),
       ),
-    [wanted.data, deal, beds, q],
+    [wanted.data, deal, beds, q, minCents, maxCents, types],
   );
+
 
   const pins: MapPin[] = useMemo(() => {
     const source =
@@ -150,6 +184,22 @@ function Browse() {
               { value: "3", label: "3+" },
             ]}
           />
+          <button
+            onClick={() => setShowAdvanced((s) => !s)}
+            aria-expanded={showAdvanced}
+            className={`rounded-[10px] px-3.5 py-2 text-sm font-medium ring-1 ${
+              showAdvanced || advancedCount
+                ? "bg-ink/[0.06] text-ink ring-ink/20"
+                : "text-ink/60 ring-ink/10 hover:bg-ink/[0.04]"
+            }`}
+          >
+            More filters
+            {advancedCount > 0 && (
+              <span className="ml-2 rounded-full bg-brand px-1.5 py-0.5 text-[10px] font-semibold text-brand-foreground">
+                {advancedCount}
+              </span>
+            )}
+          </button>
           <Link
             to="/post-wanted"
             className="rounded-[10px] px-3.5 py-2 text-sm font-medium text-brand ring-1 ring-brand/25 hover:bg-brand/5"
@@ -157,7 +207,73 @@ function Browse() {
             Post what you want
           </Link>
         </div>
+
+        {showAdvanced && (
+          <div className="mt-2 flex flex-wrap items-end gap-4 rounded-xl bg-canvas p-4 ring-1 ring-ink/10">
+            <div>
+              <span className="block text-[11px] font-medium uppercase tracking-[0.14em] text-ink/45">
+                {mode === "wanted" ? "Budget" : "Price"}{" "}
+                {deal === "rent" ? "per week (AUD)" : "(AUD)"}
+              </span>
+              <div className="mt-1.5 flex items-center gap-2">
+                <input
+                  type="number"
+                  min={0}
+                  value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)}
+                  placeholder="Min"
+                  className="w-28 rounded-[10px] bg-ink/[0.04] px-3 py-2 text-sm outline-none ring-1 ring-transparent placeholder:text-ink/35 focus:ring-brand/40"
+                />
+                <span className="text-ink/35">–</span>
+                <input
+                  type="number"
+                  min={0}
+                  value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)}
+                  placeholder="Max"
+                  className="w-28 rounded-[10px] bg-ink/[0.04] px-3 py-2 text-sm outline-none ring-1 ring-transparent placeholder:text-ink/35 focus:ring-brand/40"
+                />
+              </div>
+            </div>
+
+            <div>
+              <span className="block text-[11px] font-medium uppercase tracking-[0.14em] text-ink/45">
+                Property type
+              </span>
+              <div className="mt-1.5 flex flex-wrap gap-2">
+                {PROPERTY_KINDS.map((k) => {
+                  const on = types.includes(k.value);
+                  return (
+                    <button
+                      key={k.value}
+                      type="button"
+                      aria-pressed={on}
+                      onClick={() => toggleType(k.value)}
+                      className={`rounded-full px-3 py-1.5 text-[12px] font-medium ring-1 ${
+                        on
+                          ? "bg-brand/10 text-brand ring-brand/30"
+                          : "bg-ink/[0.03] text-ink/60 ring-ink/10"
+                      }`}
+                    >
+                      {k.label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {advancedCount > 0 && (
+              <button
+                onClick={resetAdvanced}
+                className="ml-auto rounded-[10px] px-3 py-2 text-sm font-medium text-ink/55 hover:bg-ink/[0.04]"
+              >
+                Clear filters
+              </button>
+            )}
+          </div>
+        )}
       </div>
+
 
       <main className="mx-auto grid max-w-[1440px] grid-cols-12 gap-5 px-6 py-5">
         <section className="col-span-12 lg:col-span-5 xl:col-span-4">
@@ -286,7 +402,10 @@ function ListingCard({
           <span className="rounded-full bg-accent/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-ink/70">
             {listing.deal === "rent" ? "For rent" : "For sale"}
           </span>
-          <span className="truncate text-[12px] text-ink/45">{listing.suburb}</span>
+          <span className="truncate text-[12px] text-ink/45">
+            {propertyKindLabel(listing.property_type)} · {listing.suburb}
+          </span>
+
         </div>
         <h3 className="mt-1 truncate font-display text-[15px] font-semibold">{listing.title}</h3>
         <p className="truncate text-[12px] text-ink/50">{listing.address}</p>

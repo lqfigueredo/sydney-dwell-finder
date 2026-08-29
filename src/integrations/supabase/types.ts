@@ -154,6 +154,7 @@ export type Database = {
           parking: number
           postcode: string | null
           price_cents: number
+          property_type: Database["public"]["Enums"]["property_kind"]
           published: boolean
           suburb: string
           title: string
@@ -176,6 +177,7 @@ export type Database = {
           parking?: number
           postcode?: string | null
           price_cents?: number
+          property_type?: Database["public"]["Enums"]["property_kind"]
           published?: boolean
           suburb: string
           title: string
@@ -198,6 +200,7 @@ export type Database = {
           parking?: number
           postcode?: string | null
           price_cents?: number
+          property_type?: Database["public"]["Enums"]["property_kind"]
           published?: boolean
           suburb?: string
           title?: string
@@ -290,6 +293,7 @@ export type Database = {
           must_haves: string[]
           notes: string
           open: boolean
+          property_types: Database["public"]["Enums"]["property_kind"][]
           seeker_id: string | null
           suburbs: string[]
           title: string
@@ -307,6 +311,7 @@ export type Database = {
           must_haves?: string[]
           notes?: string
           open?: boolean
+          property_types?: Database["public"]["Enums"]["property_kind"][]
           seeker_id?: string | null
           suburbs?: string[]
           title: string
@@ -324,6 +329,7 @@ export type Database = {
           must_haves?: string[]
           notes?: string
           open?: boolean
+          property_types?: Database["public"]["Enums"]["property_kind"][]
           seeker_id?: string | null
           suburbs?: string[]
           title?: string
@@ -341,6 +347,7 @@ export type Database = {
     Enums: {
       application_status: "pending" | "accepted" | "declined"
       deal_kind: "rent" | "buy"
+      property_kind: "apartment" | "house" | "townhouse" | "studio" | "land"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -470,6 +477,7 @@ export const Constants = {
     Enums: {
       application_status: ["pending", "accepted", "declined"],
       deal_kind: ["rent", "buy"],
+      property_kind: ["apartment", "house", "townhouse", "studio", "land"],
     },
   },
 } as const
