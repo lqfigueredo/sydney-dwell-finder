@@ -168,17 +168,22 @@ function ListingDetail() {
 
                 {l.lat != null && l.lng != null && (
                   <div className="h-64">
-                    <BlueprintMap
-                      pins={[
+                    <GoogleMap
+                      markers={[
                         {
                           id: l.id,
                           lat: l.lat,
                           lng: l.lng,
-                          label: l.suburb,
                           kind: "offered",
+                          title: l.title,
+                          price: formatPrice(l.deal, l.price_cents),
+                          label: `${l.address}, ${l.suburb}`,
+                          link: `/listings/${l.id}`,
                         },
                       ]}
                       activeId={l.id}
+                      fitBounds={false}
+                      zoom={15}
                     />
                   </div>
                 )}
