@@ -80,7 +80,7 @@ export function coordsFor(item: {
 }): { lat: number; lng: number } | null {
   if (item.lat != null && item.lng != null) return { lat: item.lat, lng: item.lng };
   const first = item.suburbs?.find((s) => SUBURB_COORDS[s]);
-  return first ? SUBURB_COORDS[first] : null;
+  return first ? (SUBURB_COORDS[first] ?? null) : null;
 }
 
 export function initials(name: string): string {
