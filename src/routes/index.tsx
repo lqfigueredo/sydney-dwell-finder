@@ -39,7 +39,6 @@ export const Route = createFileRoute("/")({
 
 function Browse() {
   const [mode, setMode] = useState<"properties" | "wanted">("properties");
-  const navigate = useNavigate();
   const [deal, setDeal] = useState<Deal | "all">("all");
   const [sort, setSort] = useState<"newest" | "price-asc" | "price-desc">("newest");
   const [query, setQuery] = useState("");
