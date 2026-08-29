@@ -15,13 +15,13 @@ import {
 export const Route = createFileRoute("/_authenticated/post-wanted")({
   head: () => ({
     meta: [
-      { title: "Post what you're looking for — Tidewater Sydney" },
+      { title: "Post what you're looking for — SydHub Sydney" },
       {
         name: "description",
         content:
           "Publish a wanted ad with your budget, suburbs and must-haves, and let Sydney owners apply to you.",
       },
-      { property: "og:title", content: "Post what you're looking for — Tidewater Sydney" },
+      { property: "og:title", content: "Post what you're looking for — SydHub Sydney" },
       {
         property: "og:description",
         content: "Publish your brief and let Sydney owners apply to you.",

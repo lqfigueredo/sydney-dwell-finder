@@ -29,24 +29,7 @@ export function priceShort(deal: Deal, cents: number): string {
   return deal === "rent" ? `${formatPrice(deal, cents)}/wk` : formatPrice(deal, cents);
 }
 
-/** Sydney metro viewport used by the blueprint map. */
-export const SYDNEY_BOUNDS = {
-  west: 150.98,
-  east: 151.32,
-  north: -33.74,
-  south: -34.02,
-};
-
 export const SYDNEY_CENTRE = { lat: -33.87, lng: 151.14 };
-
-/** Project a lat/lng into 0-1 panel coordinates. */
-export function project(lat: number, lng: number) {
-  const { west, east, north, south } = SYDNEY_BOUNDS;
-  return {
-    x: (lng - west) / (east - west),
-    y: (lat - north) / (south - north),
-  };
-}
 
 /** Rough coordinates for suburbs used when a wanted ad has no pin of its own. */
 export const SUBURB_COORDS: Record<string, { lat: number; lng: number }> = {

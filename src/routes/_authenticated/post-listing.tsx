@@ -4,11 +4,12 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
-import { BlueprintMap } from "@/components/BlueprintMap";
+import { GoogleMap } from "@/components/GoogleMap";
 import {
   PROPERTY_KINDS,
   SUBURB_COORDS,
   SUBURB_NAMES,
+  SYDNEY_CENTRE,
   type Deal,
   type PropertyKind,
 } from "@/lib/marketplace";
@@ -16,13 +17,13 @@ import {
 export const Route = createFileRoute("/_authenticated/post-listing")({
   head: () => ({
     meta: [
-      { title: "List a property — Tidewater Sydney" },
+      { title: "List a property — SydHub Sydney" },
       {
         name: "description",
         content:
-          "Publish a Sydney rental or sale with photos, features and a pin on the Tidewater map.",
+          "Publish a Sydney rental or sale with photos, features and a pin on the SydHub map.",
       },
-      { property: "og:title", content: "List a property — Tidewater Sydney" },
+      { property: "og:title", content: "List a property — SydHub Sydney" },
       {
         property: "og:description",
         content: "Publish a Sydney rental or sale with photos and a map pin.",
@@ -316,22 +317,21 @@ function PostListing() {
                 Click the map to move the pin. Scroll to zoom, drag to pan.
               </p>
               <div className="mt-3 h-[380px]">
-                <BlueprintMap
-                  pins={
-                    pin
-                      ? [
-                          {
-                            id: "new",
-                            lat: pin.lat,
-                            lng: pin.lng,
-                            label: form.suburb,
-                            kind: "offered",
-                          },
-                        ]
-                      : []
-                  }
-                  activeId="new"
-                  onPick={setPin}
+                <GoogleMap
+                  center={pin ?? SYDNEY_CENTRE}
+                  zoom={pin ? 16 : 13}
+                  markers={[]}
+                  fitBounds={false}
+                  onMapClick={(lat, lng) => setPin({ lat, lng })}
+                  {...(pin
+                    ? {
+                        draggableMarker: {
+                          lat: pin.lat,
+                          lng: pin.lng,
+                          onDragEnd: (lat: number, lng: number) => setPin({ lat, lng }),
+                        },
+                      }
+                    : {})}
                 />
               </div>
             </div>

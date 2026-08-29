@@ -6,19 +6,19 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
 import { CommentThread } from "@/components/CommentThread";
-import { BlueprintMap } from "@/components/BlueprintMap";
+import { GoogleMap } from "@/components/GoogleMap";
 import { coordsFor, formatPrice, type Listing, type WantedAd } from "@/lib/marketplace";
 
 export const Route = createFileRoute("/wanted/$id")({
   head: () => ({
     meta: [
-      { title: "Wanted ad — Tidewater Sydney" },
+      { title: "Wanted ad — SydHub Sydney" },
       {
         name: "description",
         content:
           "A Sydney seeker's brief: budget, suburbs and must-haves. Owners can apply with a matching property.",
       },
-      { property: "og:title", content: "Wanted ad — Tidewater Sydney" },
+      { property: "og:title", content: "Wanted ad — SydHub Sydney" },
       {
         property: "og:description",
         content: "See what this Sydney seeker wants and offer them a matching property.",
@@ -214,17 +214,22 @@ function WantedDetail() {
 
               {coords && (
                 <div className="h-64">
-                  <BlueprintMap
-                    pins={[
+                  <GoogleMap
+                    markers={[
                       {
                         id: w.id,
                         lat: coords.lat,
                         lng: coords.lng,
-                        label: w.suburbs[0] ?? "Sydney",
                         kind: "wanted",
+                        title: w.title,
+                        price: `${formatPrice(w.deal, w.budget_cents)}${w.deal === "rent" ? "/wk" : ""}`,
+                        label: w.suburbs.join(" · ") || "Sydney",
+                        link: `/wanted/${w.id}`,
                       },
                     ]}
                     activeId={w.id}
+                    fitBounds={false}
+                    zoom={14}
                   />
                 </div>
               )}

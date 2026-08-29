@@ -1,9 +1,9 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
-import { BlueprintMap, type MapPin } from "@/components/BlueprintMap";
+import { GoogleMap, type MapMarker } from "@/components/GoogleMap";
 import {
   coordsFor,
   priceShort,
@@ -20,13 +20,13 @@ import {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Tidewater — Sydney property, both ways" },
+      { title: "SydHub — Sydney property, both ways" },
       {
         name: "description",
         content:
           "Browse Sydney rentals and sales on a live map, or post what you're looking for and let owners apply to you.",
       },
-      { property: "og:title", content: "Tidewater — Sydney property, both ways" },
+      { property: "og:title", content: "SydHub — Sydney property, both ways" },
       {
         property: "og:description",
         content:
@@ -39,7 +39,6 @@ export const Route = createFileRoute("/")({
 
 function Browse() {
   const [mode, setMode] = useState<"properties" | "wanted">("properties");
-  const navigate = useNavigate();
   const [deal, setDeal] = useState<Deal | "all">("all");
   const [sort, setSort] = useState<"newest" | "price-asc" | "price-desc">("newest");
   const [query, setQuery] = useState("");
@@ -143,24 +142,33 @@ function Browse() {
   }, [wanted.data, deal, beds, q, minCents, maxCents, types, sort]);
 
 
-  const pins: MapPin[] = useMemo(() => {
+  const markers: MapMarker[] = useMemo(() => {
     const source =
       mode === "wanted"
-        ? visibleWanted.map((w) => ({
-            id: w.id,
-            coords: coordsFor(w),
-            label: priceShort(w.deal, w.budget_cents),
-            kind: "wanted" as const,
-          }))
+        ? visibleWanted.map((w) => {
+            const coords = coordsFor(w);
+            return {
+              id: w.id,
+              lat: coords?.lat ?? 0,
+              lng: coords?.lng ?? 0,
+              kind: "wanted" as const,
+              title: w.title,
+              price: priceShort(w.deal, w.budget_cents),
+              label: w.suburbs.join(" · ") || "Sydney",
+              link: `/wanted/${w.id}`,
+            };
+          })
         : visibleListings.map((l) => ({
             id: l.id,
-            coords: coordsFor(l),
-            label: priceShort(l.deal, l.price_cents),
+            lat: l.lat ?? 0,
+            lng: l.lng ?? 0,
             kind: "offered" as const,
+            title: l.title,
+            price: priceShort(l.deal, l.price_cents),
+            label: `${propertyKindLabel(l.property_type)} · ${l.suburb}`,
+            link: `/listings/${l.id}`,
           }));
-    return source
-      .filter((s) => s.coords)
-      .map((s) => ({ id: s.id, label: s.label, kind: s.kind, ...s.coords! }));
+    return source.filter((s) => s.lat !== 0 && s.lng !== 0);
   }, [mode, visibleListings, visibleWanted]);
 
   const loading = mode === "wanted" ? wanted.isLoading : listings.isLoading;
@@ -168,7 +176,7 @@ function Browse() {
 
   return (
     <div className="min-h-screen bg-canvas text-ink">
-      <AppHeader mode={mode} />
+      <AppHeader mode={mode} onMode={setMode} />
 
       <div className="mx-auto max-w-[1440px] px-6 pt-5">
         <div className="flex flex-wrap items-center gap-2 rounded-xl bg-canvas p-2 ring-1 ring-ink/10">
@@ -342,18 +350,7 @@ function Browse() {
 
         <section className="col-span-12 lg:col-span-7 xl:col-span-8">
           <div className="h-[520px] lg:h-[calc(100vh-200px)]">
-            <BlueprintMap
-              pins={pins}
-              activeId={activeId}
-              onSelect={(id) => {
-                setActiveId(id);
-                void navigate(
-                  mode === "wanted"
-                    ? { to: "/wanted/$id", params: { id } }
-                    : { to: "/listings/$id", params: { id } },
-                );
-              }}
-            />
+            <GoogleMap markers={markers} activeId={activeId} fitBounds />
           </div>
         </section>
       </main>

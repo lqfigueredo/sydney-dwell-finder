@@ -3,19 +3,19 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AppHeader } from "@/components/AppHeader";
 import { CommentThread } from "@/components/CommentThread";
-import { BlueprintMap } from "@/components/BlueprintMap";
+import { GoogleMap } from "@/components/GoogleMap";
 import { formatPrice, priceSuffix, type Listing } from "@/lib/marketplace";
 
 export const Route = createFileRoute("/listings/$id")({
   head: () => ({
     meta: [
-      { title: "Property detail — Tidewater Sydney" },
+      { title: "Property detail — SydHub Sydney" },
       {
         name: "description",
         content:
-          "Photos, features, location and neighbour comments for this Sydney property on Tidewater.",
+          "Photos, features, location and neighbour comments for this Sydney property on SydHub.",
       },
-      { property: "og:title", content: "Property detail — Tidewater Sydney" },
+      { property: "og:title", content: "Property detail — SydHub Sydney" },
       {
         property: "og:description",
         content: "Photos, features, location and comments for this Sydney property.",
@@ -168,17 +168,22 @@ function ListingDetail() {
 
                 {l.lat != null && l.lng != null && (
                   <div className="h-64">
-                    <BlueprintMap
-                      pins={[
+                    <GoogleMap
+                      markers={[
                         {
                           id: l.id,
                           lat: l.lat,
                           lng: l.lng,
-                          label: l.suburb,
                           kind: "offered",
+                          title: l.title,
+                          price: formatPrice(l.deal, l.price_cents),
+                          label: `${l.address}, ${l.suburb}`,
+                          link: `/listings/${l.id}`,
                         },
                       ]}
                       activeId={l.id}
+                      fitBounds={false}
+                      zoom={15}
                     />
                   </div>
                 )}
