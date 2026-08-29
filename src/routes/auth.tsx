@@ -6,9 +6,6 @@ import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
 
 export const Route = createFileRoute("/auth")({
-  validateSearch: (search: { tab?: string }) => ({
-    tab: search.tab === "signup" ? ("signup" as const) : ("login" as const),
-  }),
   head: () => ({
     meta: [
       { title: "Log in or create an account — Tidewater Sydney" },
