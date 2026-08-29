@@ -1,13 +1,13 @@
 # Replace custom SVG map with Google Maps
 
-Swap the custom Blueprint SVG map for a real interactive Google Map across Tidewater, using the Lovable-managed Google Maps connection (no Google account needed).
+Swap the custom Blueprint SVG map for a real interactive Google Map across SydHub, using the built-in Google Maps connection (no Google account needed).
 
 ## Steps
 
 1. **Connect Google Maps (managed)**
-   - Open the connect card for the Google Maps Platform connector; pick the "Managed by Lovable" option — no Google account or API key required.
-   - This provides a browser key (safe to embed, referrer-restricted to `*.lovable.app`) for the Maps JavaScript API.
-   - Note: if you later publish to a custom domain, that domain will need your own Google Cloud key — the managed key only works on `*.lovable.app`.
+   - Open the connect card for the Google Maps Platform connector; pick the managed option — no Google account or API key required.
+   - This provides a browser key (safe to embed, referrer-restricted to the SydHub preview domain) for the Maps JavaScript API.
+   - Note: if you later publish to a custom domain, that domain will need its own Google Cloud key — the managed key only works on the default preview/published domain.
 
 2. **New `GoogleMap` component** (`src/components/GoogleMap.tsx`)
    - Loads the Maps JS API asynchronously (`loading=async` + `callback`), keeping SSR safe.
