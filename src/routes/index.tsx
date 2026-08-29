@@ -401,7 +401,10 @@ function ListingCard({
           <span className="rounded-full bg-accent/20 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-ink/70">
             {listing.deal === "rent" ? "For rent" : "For sale"}
           </span>
-          <span className="truncate text-[12px] text-ink/45">{listing.suburb}</span>
+          <span className="truncate text-[12px] text-ink/45">
+            {propertyKindLabel(listing.property_type)} · {listing.suburb}
+          </span>
+
         </div>
         <h3 className="mt-1 truncate font-display text-[15px] font-semibold">{listing.title}</h3>
         <p className="truncate text-[12px] text-ink/50">{listing.address}</p>
