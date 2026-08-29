@@ -38,8 +38,8 @@ function loadGoogleMaps(): Promise<any> {
   if (win.google?.maps) return Promise.resolve(win.google);
   if (loadPromise) return loadPromise;
 
-  const key = import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY;
-  const channel = import.meta.env.VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID ?? "1";
+  const key = import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_BROWSER_KEY"];
+  const channel = import.meta.env["VITE_LOVABLE_CONNECTOR_GOOGLE_MAPS_TRACKING_ID"] ?? "1";
   if (!key) {
     return Promise.reject(new Error("Google Maps browser key is not configured"));
   }
