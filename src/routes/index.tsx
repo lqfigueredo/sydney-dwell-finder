@@ -197,6 +197,15 @@ function Browse() {
               { value: "3", label: "3+" },
             ]}
           />
+          <Segmented
+            value={sort}
+            onChange={setSort}
+            options={[
+              { value: "newest", label: "Newest" },
+              { value: "price-asc", label: "Price ↑" },
+              { value: "price-desc", label: "Price ↓" },
+            ]}
+          />
           <button
             onClick={() => setShowAdvanced((s) => !s)}
             aria-expanded={showAdvanced}
