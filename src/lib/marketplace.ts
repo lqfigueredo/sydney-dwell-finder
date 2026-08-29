@@ -93,3 +93,17 @@ export function initials(name: string): string {
       .join("") || "?"
   );
 }
+
+export type PropertyKind = Database["public"]["Enums"]["property_kind"];
+
+export const PROPERTY_KINDS: { value: PropertyKind; label: string }[] = [
+  { value: "apartment", label: "Apartment" },
+  { value: "house", label: "House" },
+  { value: "townhouse", label: "Townhouse" },
+  { value: "studio", label: "Studio" },
+  { value: "land", label: "Land" },
+];
+
+export function propertyKindLabel(kind: PropertyKind): string {
+  return PROPERTY_KINDS.find((k) => k.value === kind)?.label ?? kind;
+}
