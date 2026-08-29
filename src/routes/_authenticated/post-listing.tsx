@@ -5,7 +5,13 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
 import { BlueprintMap } from "@/components/BlueprintMap";
-import { SUBURB_COORDS, SUBURB_NAMES, type Deal } from "@/lib/marketplace";
+import {
+  PROPERTY_KINDS,
+  SUBURB_COORDS,
+  SUBURB_NAMES,
+  type Deal,
+  type PropertyKind,
+} from "@/lib/marketplace";
 
 export const Route = createFileRoute("/_authenticated/post-listing")({
   head: () => ({
