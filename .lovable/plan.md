@@ -31,11 +31,22 @@ No property photo is visible to the public until an admin has reviewed it. Admin
 ### 5. Upload hygiene (light validation)
 - Client + server check: image MIME types only (jpg/png/webp), max 10 MB per file — blocks obviously wrong files before an admin ever sees them.
 
+### 6. Verified seal — trusted users skip photo review
+- Admins can grant a **Verified** seal to a user (a `trusted` role in the existing roles table, or a `verified_at` field on the profile).
+- Listings from a verified user are **auto-approved on submit** — photos go live immediately, no moderation queue step.
+- The seal shows as a badge on their listings, wanted ads, and profile ("Verified member"), so buyers/renters can see it.
+- Admins manage it from the Members page: **Grant verified / Revoke verified**, with the action recorded in the audit log.
+- Revoking the seal does not retroactively hide already-approved listings, but future submissions go back through review.
+- Admins can still remove a bad photo or pause a listing from a verified user at any time — the seal is a fast lane, not immunity.
+
 ## Technical notes
-- Migration: none strictly required for schema; only code changes. (Signed-URL TTL change is in code.)
-- `post-listing.tsx`, `listings.$id.tsx`, browse cards in `index.tsx`, `admin.functions.ts`, `admin/moderation.tsx` are the touched files.
+- Migration: add `'trusted'` to the `app_role` enum (or `profiles.verified_at`), plus a policy/helper so verified status is publicly readable for the badge.
+- Auto-approve happens server-side on insert (a trigger or the create server function checking verified status) — never trusted from the client.
+- `post-listing.tsx`, `post-wanted.tsx`, `listings.$id.tsx`, browse cards in `index.tsx`, `admin.functions.ts`, `admin/moderation.tsx`, `admin/users.tsx` are the touched files.
 - Existing seeded/1-year URLs keep working until they expire; new uploads use paths.
 
 ## Verification
-- Post a listing as a test user, confirm photos are NOT publicly viewable before approval (signed URL request denied), admin reviews photos in queue, approves → photos become public.
+- Post a listing as a normal test user: photos are NOT publicly viewable before approval; admin reviews photos in the queue, approves → photos go public.
+- Grant the seal to a test user, post again → listing and photos go live instantly with the Verified badge.
 - Admin removes one photo → owner sees the note, photo gone everywhere.
+
