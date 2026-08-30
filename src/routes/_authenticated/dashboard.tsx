@@ -37,6 +37,23 @@ type AppRow = {
   listings: { title: string; suburb: string } | null;
 };
 
+function ReviewNote({ status, reason }: { status: string; reason: string | null }) {
+  if (status === "approved") return null;
+  const text =
+    status === "pending"
+      ? "Awaiting review — not visible publicly yet"
+      : status === "paused"
+        ? "Paused by a moderator — hidden from the public site"
+        : `Rejected${reason ? `: ${reason}` : " by a moderator"}`;
+  return (
+    <span
+      className={`mt-1 block text-[11px] ${status === "rejected" ? "text-red-700" : "text-ink/50"}`}
+    >
+      {text}
+    </span>
+  );
+}
+
 function Dashboard() {
   const { user } = useAuth();
   const qc = useQueryClient();
@@ -119,12 +136,15 @@ function Dashboard() {
                   key={l.id}
                   to="/listings/$id"
                   params={{ id: l.id }}
-                  className="flex items-center justify-between rounded-[10px] bg-ink/[0.03] px-3.5 py-2.5 text-sm hover:bg-ink/[0.06]"
+                  className="block rounded-[10px] bg-ink/[0.03] px-3.5 py-2.5 text-sm hover:bg-ink/[0.06]"
                 >
-                  <span className="truncate font-medium">{l.title}</span>
-                  <span className="ml-3 shrink-0 text-ink/50">
-                    {priceShort(l.deal, l.price_cents)}
+                  <span className="flex items-center justify-between gap-3">
+                    <span className="truncate font-medium">{l.title}</span>
+                    <span className="shrink-0 text-ink/50">
+                      {priceShort(l.deal, l.price_cents)}
+                    </span>
                   </span>
+                  <ReviewNote status={l.moderation_status} reason={l.rejection_reason} />
                 </Link>
               ))}
             </Panel>
@@ -145,12 +165,15 @@ function Dashboard() {
                   key={w.id}
                   to="/wanted/$id"
                   params={{ id: w.id }}
-                  className="flex items-center justify-between rounded-[10px] bg-brand/[0.05] px-3.5 py-2.5 text-sm hover:bg-brand/10"
+                  className="block rounded-[10px] bg-brand/[0.05] px-3.5 py-2.5 text-sm hover:bg-brand/10"
                 >
-                  <span className="truncate font-medium">{w.title}</span>
-                  <span className="ml-3 shrink-0 text-brand">
-                    {formatPrice(w.deal, w.budget_cents)}
+                  <span className="flex items-center justify-between gap-3">
+                    <span className="truncate font-medium">{w.title}</span>
+                    <span className="shrink-0 text-brand">
+                      {formatPrice(w.deal, w.budget_cents)}
+                    </span>
                   </span>
+                  <ReviewNote status={w.moderation_status} reason={w.rejection_reason} />
                 </Link>
               ))}
             </Panel>
