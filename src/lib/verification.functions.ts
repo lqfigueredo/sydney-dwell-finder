@@ -206,7 +206,9 @@ export const getVerificationQueue = createServerFn({ method: "GET" })
       userIds.length
         ? supabase
             .from("profiles")
-            .select("id, display_name, suburb, verification_status, verified_at, created_at")
+            .select(
+              "id, display_name, suburb, verification_status, verified_at, verified_until, created_at",
+            )
             .in("id", userIds)
         : Promise.resolve({ data: [] as never[] }),
     ]);
@@ -236,6 +238,7 @@ export const getVerificationQueue = createServerFn({ method: "GET" })
         suburb: string | null;
         verification_status: VerificationStatus;
         verified_at: string | null;
+        verified_until: string | null;
         created_at: string;
       }[],
       docsByRequest,
