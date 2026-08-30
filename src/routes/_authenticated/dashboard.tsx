@@ -8,6 +8,35 @@ import { useServerFn } from "@tanstack/react-start";
 import { formatPrice, priceShort, type Listing, type WantedAd } from "@/lib/marketplace";
 import { VerifiedSeal } from "@/components/VerifiedSeal";
 import { getMyVerification } from "@/lib/verification.functions";
+import { TERMS_VERSION } from "@/lib/terms";
+
+/** Small confirmation of which terms version the member accepted. */
+function TermsStatus() {
+  const { user } = useAuth();
+  const { data } = useQuery({
+    queryKey: ["my-terms", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("terms_accepted_at, terms_version")
+        .eq("id", user!.id)
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+  if (!data?.terms_accepted_at) return null;
+  return (
+    <p className="mt-2 text-[12px] text-ink/50">
+      Terms accepted on {new Date(data.terms_accepted_at).toLocaleDateString("en-AU")} (v
+      {data.terms_version ?? TERMS_VERSION}) ·{" "}
+      <Link to="/terms" className="font-medium text-brand">
+        Read the terms
+      </Link>
+    </p>
+  );
+}
 
 /** Shows where the member stands on verification and links to the request flow. */
 function VerificationCard() {
@@ -177,6 +206,7 @@ function Dashboard() {
       <main className="mx-auto max-w-[1100px] px-6 py-8">
         <h1 className="font-display text-3xl font-semibold">My activity</h1>
         <VerificationCard />
+        <TermsStatus />
 
         <div className="mt-6 grid grid-cols-12 gap-5">
           <section className="col-span-12 lg:col-span-6">
