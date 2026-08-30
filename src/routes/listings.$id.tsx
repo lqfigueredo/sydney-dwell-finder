@@ -127,6 +127,19 @@ function ListingDetail() {
                   <p className="mt-1 text-sm text-ink/55">
                     {l.address}, {l.suburb} {l.postcode ?? ""}
                   </p>
+                  <a
+                    href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
+                      l.lat != null && l.lng != null
+                        ? `${l.lat},${l.lng}`
+                        : `${l.address}, ${l.suburb} NSW ${l.postcode ?? ""}`,
+                    )}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="mt-2 inline-flex items-center gap-1 text-[13px] font-semibold text-brand hover:underline"
+                  >
+                    Get directions
+                  </a>
+
                   {owner.data && (
                     <p className="mt-2 flex items-center gap-2 text-[13px] text-ink/60">
                       Listed by {owner.data.display_name || "a SydHub member"}
