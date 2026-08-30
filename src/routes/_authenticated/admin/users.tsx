@@ -110,7 +110,9 @@ function UsersPage() {
                 {members.map((p) => {
                   const isRowAdmin = adminIds.has(p.id);
                   const off = !!p.deactivated_at;
-                  const verified = !!p.verified_at;
+                  const sealExpired =
+                    !!p.verified_until && new Date(p.verified_until).getTime() <= Date.now();
+                  const verified = !!p.verified_at && !sealExpired;
                   return (
                     <tr key={p.id} className={selected === p.id ? "bg-brand/5" : undefined}>
                       <td className="px-4 py-3">
