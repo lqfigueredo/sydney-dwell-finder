@@ -309,8 +309,10 @@ export const decideVerification = createServerFn({ method: "POST" })
         verification_note: data.reason || null,
         verified_at: approved ? now : null,
         verified_by: approved ? adminId : null,
+        verified_until: approved ? data.expiresAt : null,
       })
       .eq("id", data.userId);
+
     if (pErr) throw new Error(pErr.message);
 
     await supabaseAdmin.from("admin_error_logs").insert({
