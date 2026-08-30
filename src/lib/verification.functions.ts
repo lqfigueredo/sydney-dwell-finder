@@ -34,8 +34,15 @@ async function signDocs(
     .filter((d) => d.url);
 }
 
-async function assertAdmin(supabase: { rpc: Function }, userId: string) {
-  const { data: isAdmin } = await (supabase as any).rpc("has_role", {
+type RpcClient = {
+  rpc: (
+    name: "has_role",
+    args: { _user_id: string; _role: "admin" },
+  ) => PromiseLike<{ data: boolean | null }>;
+};
+
+async function assertAdmin(supabase: RpcClient, userId: string) {
+  const { data: isAdmin } = await supabase.rpc("has_role", {
     _user_id: userId,
     _role: "admin",
   });
