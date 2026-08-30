@@ -258,17 +258,28 @@ export const decideVerification = createServerFn({ method: "POST" })
       requestId?: string | undefined;
       decision: "approved" | "rejected" | "needs_info" | "revoked";
       reason?: string | undefined;
+      /** Optional ISO date (yyyy-mm-dd) after which the seal lapses. Empty = never expires. */
+      expiresAt?: string | null | undefined;
     }) => {
       const reason = String(input.reason ?? "").trim().slice(0, 600);
       if (input.decision !== "approved" && reason.length < 3)
         throw new Error("Please give the member a reason");
+      let expiresAt: string | null = null;
+      if (input.decision === "approved" && input.expiresAt) {
+        const d = new Date(String(input.expiresAt));
+        if (Number.isNaN(d.getTime())) throw new Error("Expiry date is not a valid date");
+        if (d.getTime() <= Date.now()) throw new Error("Expiry date must be in the future");
+        expiresAt = d.toISOString();
+      }
       return {
         userId: String(input.userId),
         requestId: input.requestId ? String(input.requestId) : undefined,
         decision: input.decision,
         reason,
+        expiresAt,
       };
     },
+
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId: adminId } = context;
