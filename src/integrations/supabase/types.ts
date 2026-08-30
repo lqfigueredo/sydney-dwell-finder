@@ -258,6 +258,8 @@ export type Database = {
           phone: string | null
           suburb: string | null
           updated_at: string
+          verification_note: string | null
+          verification_status: Database["public"]["Enums"]["verification_status"]
           verified_at: string | null
           verified_by: string | null
         }
@@ -271,6 +273,8 @@ export type Database = {
           phone?: string | null
           suburb?: string | null
           updated_at?: string
+          verification_note?: string | null
+          verification_status?: Database["public"]["Enums"]["verification_status"]
           verified_at?: string | null
           verified_by?: string | null
         }
@@ -284,6 +288,8 @@ export type Database = {
           phone?: string | null
           suburb?: string | null
           updated_at?: string
+          verification_note?: string | null
+          verification_status?: Database["public"]["Enums"]["verification_status"]
           verified_at?: string | null
           verified_by?: string | null
         }
@@ -345,6 +351,89 @@ export type Database = {
           created_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
+      verification_documents: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          mime_type: string | null
+          path: string
+          request_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label?: string
+          mime_type?: string | null
+          path: string
+          request_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          mime_type?: string | null
+          path?: string
+          request_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "verification_documents_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "verification_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      verification_requests: {
+        Row: {
+          created_at: string
+          decision_reason: string | null
+          full_name: string
+          id: string
+          member_kind: Database["public"]["Enums"]["verification_member_kind"]
+          note: string
+          phone: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["verification_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          decision_reason?: string | null
+          full_name: string
+          id?: string
+          member_kind?: Database["public"]["Enums"]["verification_member_kind"]
+          note?: string
+          phone?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["verification_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          decision_reason?: string | null
+          full_name?: string
+          id?: string
+          member_kind?: Database["public"]["Enums"]["verification_member_kind"]
+          note?: string
+          phone?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["verification_status"]
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
@@ -433,6 +522,14 @@ export type Database = {
       deal_kind: "rent" | "buy"
       moderation_status: "pending" | "approved" | "rejected" | "paused"
       property_kind: "apartment" | "house" | "townhouse" | "studio" | "land"
+      verification_member_kind: "owner" | "agent" | "seeker"
+      verification_status:
+        | "none"
+        | "pending"
+        | "needs_info"
+        | "approved"
+        | "rejected"
+        | "revoked"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -565,6 +662,15 @@ export const Constants = {
       deal_kind: ["rent", "buy"],
       moderation_status: ["pending", "approved", "rejected", "paused"],
       property_kind: ["apartment", "house", "townhouse", "studio", "land"],
+      verification_member_kind: ["owner", "agent", "seeker"],
+      verification_status: [
+        "none",
+        "pending",
+        "needs_info",
+        "approved",
+        "rejected",
+        "revoked",
+      ],
     },
   },
 } as const
