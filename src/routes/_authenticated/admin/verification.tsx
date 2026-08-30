@@ -65,6 +65,7 @@ function VerificationPage() {
   const queueFn = useServerFn(getVerificationQueue);
   const decideFn = useServerFn(decideVerification);
   const [reasons, setReasons] = useState<Record<string, string>>({});
+  const [expiries, setExpiries] = useState<Record<string, string>>({});
   const [tab, setTab] = useState<"open" | "all">("open");
 
   const queue = useQuery({
