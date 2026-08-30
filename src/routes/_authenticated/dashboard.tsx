@@ -145,6 +145,11 @@ function Dashboard() {
                     </span>
                   </span>
                   <ReviewNote status={l.moderation_status} reason={l.rejection_reason} />
+                  {l.photo_removed_note ? (
+                    <span className="mt-1 block text-[12px] text-red-700">
+                      {l.photo_removed_note}
+                    </span>
+                  ) : null}
                 </Link>
               ))}
             </Panel>
