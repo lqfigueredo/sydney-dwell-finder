@@ -14,6 +14,7 @@ import {
 } from "@/components/admin/AdminShell";
 import { useAdminData } from "@/hooks/use-admin-data";
 import { VerifiedSeal } from "@/components/VerifiedSeal";
+import { hasAcceptedCurrentTerms } from "@/lib/terms";
 import { useAuth } from "@/hooks/use-auth";
 import { getAdminUserDetail } from "@/lib/admin.functions";
 
@@ -146,6 +147,18 @@ function UsersPage() {
                             Deactivated
                           </span>
                         ) : null}
+                        {hasAcceptedCurrentTerms(p) ? (
+                          <span
+                            className="rounded-full bg-brand/10 px-2 py-0.5 text-brand"
+                            title={`Accepted ${new Date(p.terms_accepted_at!).toLocaleDateString("en-AU")}`}
+                          >
+                            Terms v{p.terms_version}
+                          </span>
+                        ) : (
+                          <span className="rounded-full bg-ink/[0.06] px-2 py-0.5 text-ink/60">
+                            Terms pending
+                          </span>
+                        )}
                       </td>
                       <td className="whitespace-nowrap px-4 py-3 text-right">
                         <button
