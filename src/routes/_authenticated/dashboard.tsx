@@ -150,10 +150,13 @@ function Dashboard() {
                   params={{ id: w.id }}
                   className="flex items-center justify-between rounded-[10px] bg-brand/[0.05] px-3.5 py-2.5 text-sm hover:bg-brand/10"
                 >
-                  <span className="truncate font-medium">{w.title}</span>
-                  <span className="ml-3 shrink-0 text-brand">
-                    {formatPrice(w.deal, w.budget_cents)}
+                  <span className="flex items-center justify-between gap-3">
+                    <span className="truncate font-medium">{w.title}</span>
+                    <span className="shrink-0 text-brand">
+                      {formatPrice(w.deal, w.budget_cents)}
+                    </span>
                   </span>
+                  <ReviewNote status={w.moderation_status} reason={w.rejection_reason} />
                 </Link>
               ))}
             </Panel>
