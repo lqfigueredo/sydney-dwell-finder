@@ -10,12 +10,12 @@ export const adminDanger =
 export const adminPrimary =
   "rounded-[8px] bg-brand px-2.5 py-1 text-xs font-medium text-brand-foreground hover:opacity-90 disabled:opacity-40";
 
-const NAV = [
+const NAV: { to: string; label: string; exact?: boolean }[] = [
   { to: "/admin", label: "Dashboard", exact: true },
   { to: "/admin/moderation", label: "Moderation" },
   { to: "/admin/users", label: "Members" },
   { to: "/admin/health", label: "System health" },
-] as const;
+];
 
 export function AdminStat({
   label,
