@@ -144,7 +144,7 @@ function GetVerifiedPage() {
   });
 
   const s = state.data;
-  const canSubmit = s && s.status !== "pending" && s.status !== "approved";
+  const canSubmit = s && s.status !== "pending" && (s.status !== "approved" || s.expired);
 
   return (
     <div className="min-h-screen bg-canvas text-ink">
@@ -160,7 +160,12 @@ function GetVerifiedPage() {
           {state.isLoading ? (
             <p className="text-sm text-ink/50">Loading your status…</p>
           ) : (
-            <StatusBanner status={s?.status ?? "none"} note={s?.note ?? null} />
+            <StatusBanner
+              status={s?.status ?? "none"}
+              note={s?.note ?? null}
+              expiresAt={s?.expiresAt ?? null}
+              expired={s?.expired ?? false}
+            />
           )}
 
           {s?.request ? (
