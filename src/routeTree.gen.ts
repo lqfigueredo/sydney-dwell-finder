@@ -24,6 +24,7 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminHealthRouteImport } from './routes/_authenticated/admin/health'
 import { Route as AuthenticatedAdminModerationRouteImport } from './routes/_authenticated/admin/moderation'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
+import { Route as AuthenticatedAdminVerificationRouteImport } from './routes/_authenticated/admin/verification'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -103,6 +104,12 @@ const AuthenticatedAdminUsersRoute = AuthenticatedAdminUsersRouteImport.update({
   path: '/users',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedAdminVerificationRoute =
+  AuthenticatedAdminVerificationRouteImport.update({
+    id: '/verification',
+    path: '/verification',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -118,6 +125,7 @@ export interface FileRoutesByFullPath {
   '/admin/health': typeof AuthenticatedAdminHealthRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
@@ -133,6 +141,7 @@ export interface FileRoutesByTo {
   '/admin/health': typeof AuthenticatedAdminHealthRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
@@ -151,6 +160,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/health': typeof AuthenticatedAdminHealthRoute
   '/_authenticated/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
+  '/_authenticated/admin/verification': typeof AuthenticatedAdminVerificationRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
@@ -169,6 +179,7 @@ export interface FileRouteTypes {
     | '/admin/health'
     | '/admin/moderation'
     | '/admin/users'
+    | '/admin/verification'
     | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
     | '/admin/health'
     | '/admin/moderation'
     | '/admin/users'
+    | '/admin/verification'
     | '/admin'
   id:
     | '__root__'
@@ -201,6 +213,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/health'
     | '/_authenticated/admin/moderation'
     | '/_authenticated/admin/users'
+    | '/_authenticated/admin/verification'
     | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
@@ -320,6 +333,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminUsersRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/verification': {
+      id: '/_authenticated/admin/verification'
+      path: '/verification'
+      fullPath: '/admin/verification'
+      preLoaderRoute: typeof AuthenticatedAdminVerificationRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
   }
 }
 
@@ -327,6 +347,7 @@ interface AuthenticatedAdminRouteRouteChildren {
   AuthenticatedAdminHealthRoute: typeof AuthenticatedAdminHealthRoute
   AuthenticatedAdminModerationRoute: typeof AuthenticatedAdminModerationRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
+  AuthenticatedAdminVerificationRoute: typeof AuthenticatedAdminVerificationRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
 }
 
@@ -335,6 +356,7 @@ const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren
     AuthenticatedAdminHealthRoute: AuthenticatedAdminHealthRoute,
     AuthenticatedAdminModerationRoute: AuthenticatedAdminModerationRoute,
     AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
+    AuthenticatedAdminVerificationRoute: AuthenticatedAdminVerificationRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   }
 
