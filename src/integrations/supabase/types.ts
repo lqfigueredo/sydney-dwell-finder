@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_error_logs: {
+        Row: {
+          created_at: string
+          detail: string | null
+          id: string
+          message: string
+          route: string | null
+          severity: string
+          source: string
+        }
+        Insert: {
+          created_at?: string
+          detail?: string | null
+          id?: string
+          message: string
+          route?: string | null
+          severity?: string
+          source?: string
+        }
+        Update: {
+          created_at?: string
+          detail?: string | null
+          id?: string
+          message?: string
+          route?: string | null
+          severity?: string
+          source?: string
+        }
+        Relationships: []
+      }
       applications: {
         Row: {
           applicant_id: string
@@ -150,12 +180,14 @@ export type Database = {
           id: string
           lat: number | null
           lng: number | null
+          moderation_status: Database["public"]["Enums"]["moderation_status"]
           owner_id: string | null
           parking: number
           postcode: string | null
           price_cents: number
           property_type: Database["public"]["Enums"]["property_kind"]
           published: boolean
+          rejection_reason: string | null
           suburb: string
           title: string
           updated_at: string
@@ -173,12 +205,14 @@ export type Database = {
           id?: string
           lat?: number | null
           lng?: number | null
+          moderation_status?: Database["public"]["Enums"]["moderation_status"]
           owner_id?: string | null
           parking?: number
           postcode?: string | null
           price_cents?: number
           property_type?: Database["public"]["Enums"]["property_kind"]
           published?: boolean
+          rejection_reason?: string | null
           suburb: string
           title: string
           updated_at?: string
@@ -196,12 +230,14 @@ export type Database = {
           id?: string
           lat?: number | null
           lng?: number | null
+          moderation_status?: Database["public"]["Enums"]["moderation_status"]
           owner_id?: string | null
           parking?: number
           postcode?: string | null
           price_cents?: number
           property_type?: Database["public"]["Enums"]["property_kind"]
           published?: boolean
+          rejection_reason?: string | null
           suburb?: string
           title?: string
           updated_at?: string
@@ -213,6 +249,7 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           created_at: string
+          deactivated_at: string | null
           display_name: string
           id: string
           phone: string | null
@@ -223,6 +260,7 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          deactivated_at?: string | null
           display_name?: string
           id: string
           phone?: string | null
@@ -233,6 +271,7 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           created_at?: string
+          deactivated_at?: string | null
           display_name?: string
           id?: string
           phone?: string | null
@@ -310,11 +349,13 @@ export type Database = {
           id: string
           lat: number | null
           lng: number | null
+          moderation_status: Database["public"]["Enums"]["moderation_status"]
           move_in_date: string | null
           must_haves: string[]
           notes: string
           open: boolean
           property_types: Database["public"]["Enums"]["property_kind"][]
+          rejection_reason: string | null
           seeker_id: string | null
           suburbs: string[]
           title: string
@@ -328,11 +369,13 @@ export type Database = {
           id?: string
           lat?: number | null
           lng?: number | null
+          moderation_status?: Database["public"]["Enums"]["moderation_status"]
           move_in_date?: string | null
           must_haves?: string[]
           notes?: string
           open?: boolean
           property_types?: Database["public"]["Enums"]["property_kind"][]
+          rejection_reason?: string | null
           seeker_id?: string | null
           suburbs?: string[]
           title: string
@@ -346,11 +389,13 @@ export type Database = {
           id?: string
           lat?: number | null
           lng?: number | null
+          moderation_status?: Database["public"]["Enums"]["moderation_status"]
           move_in_date?: string | null
           must_haves?: string[]
           notes?: string
           open?: boolean
           property_types?: Database["public"]["Enums"]["property_kind"][]
+          rejection_reason?: string | null
           seeker_id?: string | null
           suburbs?: string[]
           title?: string
@@ -370,11 +415,13 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_active_account: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
       application_status: "pending" | "accepted" | "declined"
       deal_kind: "rent" | "buy"
+      moderation_status: "pending" | "approved" | "rejected" | "paused"
       property_kind: "apartment" | "house" | "townhouse" | "studio" | "land"
     }
     CompositeTypes: {
@@ -506,6 +553,7 @@ export const Constants = {
       app_role: ["admin", "moderator", "user"],
       application_status: ["pending", "accepted", "declined"],
       deal_kind: ["rent", "buy"],
+      moderation_status: ["pending", "approved", "rejected", "paused"],
       property_kind: ["apartment", "house", "townhouse", "studio", "land"],
     },
   },
