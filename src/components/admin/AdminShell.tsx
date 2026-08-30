@@ -13,6 +13,7 @@ export const adminPrimary =
 const NAV: { to: string; label: string; exact?: boolean }[] = [
   { to: "/admin", label: "Dashboard", exact: true },
   { to: "/admin/moderation", label: "Moderation" },
+  { to: "/admin/verification", label: "Verification" },
   { to: "/admin/users", label: "Members" },
   { to: "/admin/health", label: "System health" },
 ];
