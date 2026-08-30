@@ -169,6 +169,7 @@ function Dashboard() {
       <AppHeader />
       <main className="mx-auto max-w-[1100px] px-6 py-8">
         <h1 className="font-display text-3xl font-semibold">My activity</h1>
+        <VerificationCard />
 
         <div className="mt-6 grid grid-cols-12 gap-5">
           <section className="col-span-12 lg:col-span-6">
