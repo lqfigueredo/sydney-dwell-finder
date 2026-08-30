@@ -65,7 +65,7 @@ function ListingDetail() {
     queryFn: async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("display_name, verified_at")
+        .select("display_name, verified_at, verified_until")
         .eq("id", l!.owner_id!)
         .maybeSingle();
       return data;
@@ -130,7 +130,11 @@ function ListingDetail() {
                   {owner.data && (
                     <p className="mt-2 flex items-center gap-2 text-[13px] text-ink/60">
                       Listed by {owner.data.display_name || "a SydHub member"}
-                      {owner.data.verified_at && <VerifiedSeal />}
+                      {owner.data.verified_at &&
+                        (!owner.data.verified_until ||
+                          new Date(owner.data.verified_until).getTime() > Date.now()) && (
+                          <VerifiedSeal />
+                        )}
                     </p>
                   )}
 

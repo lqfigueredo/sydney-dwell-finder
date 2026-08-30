@@ -57,7 +57,7 @@ function VerificationCard() {
         to="/get-verified"
         className="rounded-[8px] bg-brand px-3 py-1.5 text-xs font-semibold text-brand-foreground"
       >
-        {data.status === "none" ? "Get verified" : "View request"}
+        {data.status === "none" ? "Get verified" : data.expired ? "Renew seal" : "View request"}
       </Link>
     </div>
   );
