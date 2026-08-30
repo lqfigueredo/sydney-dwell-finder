@@ -19,6 +19,7 @@ import { Route as AuthenticatedPostListingRouteImport } from './routes/_authenti
 import { Route as AuthenticatedPostWantedRouteImport } from './routes/_authenticated/post-wanted'
 import { Route as ListingsIdRouteImport } from './routes/listings.$id'
 import { Route as WantedIdRouteImport } from './routes/wanted.$id'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -70,28 +71,34 @@ const WantedIdRoute = WantedIdRouteImport.update({
   path: '/wanted/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/admin': typeof AuthenticatedAdminRouteRoute
+  '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/post-listing': typeof AuthenticatedPostListingRoute
   '/post-wanted': typeof AuthenticatedPostWantedRoute
   '/listings/$id': typeof ListingsIdRoute
   '/wanted/$id': typeof WantedIdRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/admin': typeof AuthenticatedAdminRouteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/post-listing': typeof AuthenticatedPostListingRoute
   '/post-wanted': typeof AuthenticatedPostWantedRoute
   '/listings/$id': typeof ListingsIdRoute
   '/wanted/$id': typeof WantedIdRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -99,12 +106,13 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
-  '/_authenticated/admin': typeof AuthenticatedAdminRouteRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/post-listing': typeof AuthenticatedPostListingRoute
   '/_authenticated/post-wanted': typeof AuthenticatedPostWantedRoute
   '/listings/$id': typeof ListingsIdRoute
   '/wanted/$id': typeof WantedIdRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -118,17 +126,18 @@ export interface FileRouteTypes {
     | '/post-wanted'
     | '/listings/$id'
     | '/wanted/$id'
+    | '/admin/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/reset-password'
-    | '/admin'
     | '/dashboard'
     | '/post-listing'
     | '/post-wanted'
     | '/listings/$id'
     | '/wanted/$id'
+    | '/admin'
   id:
     | '__root__'
     | '/'
@@ -141,6 +150,7 @@ export interface FileRouteTypes {
     | '/_authenticated/post-wanted'
     | '/listings/$id'
     | '/wanted/$id'
+    | '/_authenticated/admin/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -224,18 +234,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof WantedIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
   }
 }
 
+interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
+  {
+    AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  }
+
+const AuthenticatedAdminRouteRouteWithChildren =
+  AuthenticatedAdminRouteRoute._addFileChildren(
+    AuthenticatedAdminRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
-  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRoute
+  AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedPostListingRoute: typeof AuthenticatedPostListingRoute
   AuthenticatedPostWantedRoute: typeof AuthenticatedPostWantedRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRoute,
+  AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedPostListingRoute: AuthenticatedPostListingRoute,
   AuthenticatedPostWantedRoute: AuthenticatedPostWantedRoute,
