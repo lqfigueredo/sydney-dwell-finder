@@ -172,9 +172,41 @@ function AuthPage() {
                   placeholder="••••••••"
                   required
                 />
+                {mode === "signup" && (
+                  <label className="flex items-start gap-2 text-[12px] leading-relaxed text-ink/60">
+                    <input
+                      type="checkbox"
+                      required
+                      checked={agreed}
+                      onChange={(e) => setAgreed(e.target.checked)}
+                      className="mt-0.5 size-4 accent-[var(--color-brand,#0F6F6C)]"
+                    />
+                    <span>
+                      I agree to the{" "}
+                      <a
+                        href="/terms"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-medium text-brand hover:text-brand/80"
+                      >
+                        Terms of Use
+                      </a>{" "}
+                      and{" "}
+                      <a
+                        href="/terms"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-medium text-brand hover:text-brand/80"
+                      >
+                        Privacy Policy
+                      </a>
+                      .
+                    </span>
+                  </label>
+                )}
                 <button
                   type="submit"
-                  disabled={busy}
+                  disabled={busy || (mode === "signup" && !agreed)}
                   className="w-full rounded-[10px] bg-brand px-4 py-2.5 text-sm font-semibold text-brand-foreground ring-1 ring-brand/25 hover:bg-brand/90 disabled:opacity-60"
                 >
                   {busy ? "Working…" : mode === "signup" ? "Create account" : "Log in"}
