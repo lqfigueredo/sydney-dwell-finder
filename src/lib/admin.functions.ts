@@ -29,7 +29,9 @@ export const getAdminSnapshot = createServerFn({ method: "GET" })
         .limit(500),
       supabase
         .from("profiles")
-        .select("id, display_name, suburb, bio, phone, avatar_url, deactivated_at, created_at")
+        .select(
+          "id, display_name, suburb, bio, phone, avatar_url, deactivated_at, verified_at, created_at",
+        )
         .order("created_at", { ascending: false })
         .limit(500),
       supabase
@@ -77,6 +79,8 @@ type Action =
   | { kind: "comment.delete"; id: string }
   | { kind: "role.set"; id: string; value: boolean }
   | { kind: "user.deactivate"; id: string; value: boolean }
+  | { kind: "user.verify"; id: string; value: boolean }
+  | { kind: "photo.remove"; id: string; listingId: string; reason?: string | undefined }
   | { kind: "errors.clear" };
 
 export type ModerationStatus = "pending" | "approved" | "rejected" | "paused";
