@@ -183,6 +183,7 @@ export type Database = {
           moderation_status: Database["public"]["Enums"]["moderation_status"]
           owner_id: string | null
           parking: number
+          photo_removed_note: string | null
           postcode: string | null
           price_cents: number
           property_type: Database["public"]["Enums"]["property_kind"]
@@ -208,6 +209,7 @@ export type Database = {
           moderation_status?: Database["public"]["Enums"]["moderation_status"]
           owner_id?: string | null
           parking?: number
+          photo_removed_note?: string | null
           postcode?: string | null
           price_cents?: number
           property_type?: Database["public"]["Enums"]["property_kind"]
@@ -233,6 +235,7 @@ export type Database = {
           moderation_status?: Database["public"]["Enums"]["moderation_status"]
           owner_id?: string | null
           parking?: number
+          photo_removed_note?: string | null
           postcode?: string | null
           price_cents?: number
           property_type?: Database["public"]["Enums"]["property_kind"]
@@ -255,6 +258,8 @@ export type Database = {
           phone: string | null
           suburb: string | null
           updated_at: string
+          verified_at: string | null
+          verified_by: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -266,6 +271,8 @@ export type Database = {
           phone?: string | null
           suburb?: string | null
           updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -277,6 +284,8 @@ export type Database = {
           phone?: string | null
           suburb?: string | null
           updated_at?: string
+          verified_at?: string | null
+          verified_by?: string | null
         }
         Relationships: []
       }
@@ -416,6 +425,7 @@ export type Database = {
         Returns: boolean
       }
       is_active_account: { Args: { _user_id: string }; Returns: boolean }
+      is_verified_member: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
