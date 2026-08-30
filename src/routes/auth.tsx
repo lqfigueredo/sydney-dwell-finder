@@ -33,6 +33,7 @@ function AuthPage() {
   const [displayName, setDisplayName] = useState("");
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
+  const [agreed, setAgreed] = useState(false);
 
   useEffect(() => {
     if (user) void navigate({ to: "/dashboard" });
@@ -52,6 +53,15 @@ function AuthPage() {
           },
         });
         if (error) throw error;
+        if (data.session?.user) {
+          await supabase
+            .from("profiles")
+            .update({
+              terms_accepted_at: new Date().toISOString(),
+              terms_version: TERMS_VERSION,
+            })
+            .eq("id", data.session.user.id);
+        }
         if (!data.session) {
           setSent(true);
           toast.success("Check your email to confirm your account.");
