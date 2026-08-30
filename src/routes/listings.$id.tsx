@@ -48,10 +48,12 @@ function ListingDetail() {
       if (pub.cover || pub.photos.length) return pub;
       // Owners and moderators can preview photos that are still under review.
       const { data: auth } = await supabase.auth.getSession();
+      console.error("session?", !!auth.session);
       if (!auth.session) return pub;
       try {
         return await getPrivateListingPhotos({ data: { listingId: id } });
-      } catch {
+      } catch (e) {
+        console.error("private photos failed", e);
         return pub;
       }
     },
