@@ -5,6 +5,8 @@ import { AppHeader } from "@/components/AppHeader";
 import { CommentThread } from "@/components/CommentThread";
 import { GoogleMap } from "@/components/GoogleMap";
 import { formatPrice, priceSuffix, type Listing } from "@/lib/marketplace";
+import { getPublicListingPhotos } from "@/lib/photos.functions";
+import { VerifiedSeal } from "@/components/VerifiedSeal";
 
 export const Route = createFileRoute("/listings/$id")({
   head: () => ({
@@ -37,20 +39,27 @@ function ListingDetail() {
     },
   });
 
+  // Photos live in a private bucket; the server only mints links once the
+  // listing has cleared moderation.
   const photos = useQuery({
     queryKey: ["listing-photos", id],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .from("listing_photos")
-        .select("id, url")
-        .eq("listing_id", id)
-        .order("sort_order");
-      if (error) throw error;
-      return data;
-    },
+    queryFn: () => getPublicListingPhotos({ data: { listingId: id } }),
   });
 
   const l = listing.data;
+
+  const owner = useQuery({
+    queryKey: ["listing-owner", l?.owner_id],
+    enabled: !!l?.owner_id,
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("profiles")
+        .select("display_name, verified_at")
+        .eq("id", l!.owner_id!)
+        .maybeSingle();
+      return data;
+    },
+  });
 
   return (
     <div className="min-h-screen bg-canvas text-ink">
@@ -72,9 +81,9 @@ function ListingDetail() {
             <div className="mt-4 grid grid-cols-12 gap-5">
               <div className="col-span-12 lg:col-span-8">
                 <div className="blueprint-grid grid aspect-[16/9] place-items-center overflow-hidden rounded-xl ring-1 ring-ink/10">
-                  {l.cover_url ? (
+                  {photos.data?.cover ? (
                     <img
-                      src={l.cover_url}
+                      src={photos.data.cover}
                       alt={l.title}
                       className="size-full object-cover"
                     />
@@ -85,9 +94,9 @@ function ListingDetail() {
                   )}
                 </div>
 
-                {(photos.data?.length ?? 0) > 0 && (
+                {(photos.data?.photos.length ?? 0) > 0 && (
                   <div className="mt-3 grid grid-cols-4 gap-3">
-                    {photos.data!.map((p) => (
+                    {photos.data!.photos.map((p) => (
                       <img
                         key={p.id}
                         src={p.url}
@@ -107,6 +116,12 @@ function ListingDetail() {
                   <p className="mt-1 text-sm text-ink/55">
                     {l.address}, {l.suburb} {l.postcode ?? ""}
                   </p>
+                  {owner.data && (
+                    <p className="mt-2 flex items-center gap-2 text-[13px] text-ink/60">
+                      Listed by {owner.data.display_name || "a SydHub member"}
+                      {owner.data.verified_at && <VerifiedSeal />}
+                    </p>
+                  )}
 
                   <div className="mt-5 flex flex-wrap gap-2 text-[13px]">
                     {[
