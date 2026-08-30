@@ -81,10 +81,14 @@ function PostWanted() {
           lat: coords?.lat ?? null,
           lng: coords?.lng ?? null,
         })
-        .select("id")
+        .select("id, moderation_status")
         .single();
       if (error) throw error;
-      toast.success("Submitted — a moderator will review it shortly.");
+      toast.success(
+        data.moderation_status === "approved"
+          ? "Published — your verified seal skipped the review queue."
+          : "Submitted — a moderator will review it shortly.",
+      );
       void navigate({ to: "/wanted/$id", params: { id: data.id } });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not publish");
