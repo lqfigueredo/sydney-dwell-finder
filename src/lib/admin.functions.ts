@@ -30,7 +30,7 @@ export const getAdminSnapshot = createServerFn({ method: "GET" })
       supabase
         .from("profiles")
         .select(
-          "id, display_name, suburb, bio, phone, avatar_url, deactivated_at, verified_at, verified_until, created_at",
+          "id, display_name, suburb, bio, phone, avatar_url, deactivated_at, verified_at, verified_until, terms_accepted_at, terms_version, created_at",
         )
         .order("created_at", { ascending: false })
         .limit(500),
