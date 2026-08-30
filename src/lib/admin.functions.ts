@@ -70,10 +70,10 @@ export const getAdminSnapshot = createServerFn({ method: "GET" })
 type Action =
   | { kind: "listing.publish"; id: string; value: boolean }
   | { kind: "listing.delete"; id: string }
-  | { kind: "listing.moderate"; id: string; status: ModerationStatus; reason?: string }
+  | { kind: "listing.moderate"; id: string; status: ModerationStatus; reason?: string | undefined }
   | { kind: "wanted.open"; id: string; value: boolean }
   | { kind: "wanted.delete"; id: string }
-  | { kind: "wanted.moderate"; id: string; status: ModerationStatus; reason?: string }
+  | { kind: "wanted.moderate"; id: string; status: ModerationStatus; reason?: string | undefined }
   | { kind: "comment.delete"; id: string }
   | { kind: "role.set"; id: string; value: boolean }
   | { kind: "user.deactivate"; id: string; value: boolean }
