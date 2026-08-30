@@ -5,7 +5,7 @@ import { AppHeader } from "@/components/AppHeader";
 import { CommentThread } from "@/components/CommentThread";
 import { GoogleMap } from "@/components/GoogleMap";
 import { formatPrice, priceSuffix, type Listing } from "@/lib/marketplace";
-import { getPublicListingPhotos } from "@/lib/photos.functions";
+import { getPrivateListingPhotos, getPublicListingPhotos } from "@/lib/photos.functions";
 import { VerifiedSeal } from "@/components/VerifiedSeal";
 
 export const Route = createFileRoute("/listings/$id")({
@@ -43,7 +43,18 @@ function ListingDetail() {
   // listing has cleared moderation.
   const photos = useQuery({
     queryKey: ["listing-photos", id],
-    queryFn: () => getPublicListingPhotos({ data: { listingId: id } }),
+    queryFn: async () => {
+      const pub = await getPublicListingPhotos({ data: { listingId: id } });
+      if (pub.cover || pub.photos.length) return pub;
+      // Owners and moderators can preview photos that are still under review.
+      const { data: auth } = await supabase.auth.getSession();
+      if (!auth.session) return pub;
+      try {
+        return await getPrivateListingPhotos({ data: { listingId: id } });
+      } catch {
+        return pub;
+      }
+    },
   });
 
   const l = listing.data;
