@@ -20,17 +20,23 @@ function VerificationCard() {
   });
   if (!data) return null;
 
-  if (data.status === "approved") {
+  if (data.status === "approved" && !data.expired) {
     return (
       <div className="mt-4 flex flex-wrap items-center gap-2 rounded-[12px] bg-brand/10 px-4 py-3 text-sm">
         <VerifiedSeal />
-        <span className="text-ink/70">Your listings and wanted ads go live without review.</span>
+        <span className="text-ink/70">
+          Your listings and wanted ads go live without review.
+          {data.expiresAt
+            ? ` Seal valid until ${new Date(data.expiresAt).toLocaleDateString("en-AU")}.`
+            : ""}
+        </span>
       </div>
     );
   }
 
-  const copy =
-    data.status === "pending"
+  const copy = data.expired
+    ? `Your verified seal expired on ${new Date(data.expiresAt!).toLocaleDateString("en-AU")} — request it again to keep posting without review.`
+    : data.status === "pending"
       ? "Your verification request is with a moderator."
       : data.status === "needs_info"
         ? "A moderator asked for more information on your verification request."
@@ -39,6 +45,7 @@ function VerificationCard() {
           : data.status === "revoked"
             ? "Your verified seal was removed."
             : "Get the verified seal so your posts publish instantly, without photo review.";
+
 
   return (
     <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[12px] bg-accent/20 px-4 py-3 text-sm">
@@ -50,7 +57,7 @@ function VerificationCard() {
         to="/get-verified"
         className="rounded-[8px] bg-brand px-3 py-1.5 text-xs font-semibold text-brand-foreground"
       >
-        {data.status === "none" ? "Get verified" : "View request"}
+        {data.status === "none" ? "Get verified" : data.expired ? "Renew seal" : "View request"}
       </Link>
     </div>
   );

@@ -58,7 +58,7 @@ export const getMyVerification = createServerFn({ method: "GET" })
     const [profile, request] = await Promise.all([
       supabase
         .from("profiles")
-        .select("verification_status, verification_note, verified_at")
+        .select("verification_status, verification_note, verified_at, verified_until")
         .eq("id", userId)
         .maybeSingle(),
       supabase
@@ -79,14 +79,20 @@ export const getMyVerification = createServerFn({ method: "GET" })
       docs = await signDocs(rows ?? []);
     }
 
+    const expiresAt = profile.data?.verified_until ?? null;
+    const expired = !!expiresAt && new Date(expiresAt).getTime() <= Date.now();
+
     return {
       status: (profile.data?.verification_status ?? "none") as VerificationStatus,
       note: profile.data?.verification_note ?? null,
       verifiedAt: profile.data?.verified_at ?? null,
+      expiresAt,
+      expired,
       request: request.data,
       docs,
     };
   });
+
 
 /** Member submits (or re-submits) a verification request with uploaded documents. */
 export const submitVerificationRequest = createServerFn({ method: "POST" })
@@ -124,13 +130,16 @@ export const submitVerificationRequest = createServerFn({ method: "POST" })
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("verification_status")
+      .select("verification_status, verified_until")
       .eq("id", userId)
       .maybeSingle();
+    const sealExpired =
+      !!profile?.verified_until && new Date(profile.verified_until).getTime() <= Date.now();
     if (profile?.verification_status === "pending")
       throw new Error("You already have a request under review");
-    if (profile?.verification_status === "approved")
+    if (profile?.verification_status === "approved" && !sealExpired)
       throw new Error("You are already a verified member");
+
 
     for (const d of data.docs) {
       if (!d.path.startsWith(`${userId}/`)) throw new Error("Invalid document path");
@@ -197,7 +206,9 @@ export const getVerificationQueue = createServerFn({ method: "GET" })
       userIds.length
         ? supabase
             .from("profiles")
-            .select("id, display_name, suburb, verification_status, verified_at, created_at")
+            .select(
+              "id, display_name, suburb, verification_status, verified_at, verified_until, created_at",
+            )
             .in("id", userIds)
         : Promise.resolve({ data: [] as never[] }),
     ]);
@@ -227,6 +238,7 @@ export const getVerificationQueue = createServerFn({ method: "GET" })
         suburb: string | null;
         verification_status: VerificationStatus;
         verified_at: string | null;
+        verified_until: string | null;
         created_at: string;
       }[],
       docsByRequest,
@@ -246,17 +258,28 @@ export const decideVerification = createServerFn({ method: "POST" })
       requestId?: string | undefined;
       decision: "approved" | "rejected" | "needs_info" | "revoked";
       reason?: string | undefined;
+      /** Optional ISO date (yyyy-mm-dd) after which the seal lapses. Empty = never expires. */
+      expiresAt?: string | null | undefined;
     }) => {
       const reason = String(input.reason ?? "").trim().slice(0, 600);
       if (input.decision !== "approved" && reason.length < 3)
         throw new Error("Please give the member a reason");
+      let expiresAt: string | null = null;
+      if (input.decision === "approved" && input.expiresAt) {
+        const d = new Date(String(input.expiresAt));
+        if (Number.isNaN(d.getTime())) throw new Error("Expiry date is not a valid date");
+        if (d.getTime() <= Date.now()) throw new Error("Expiry date must be in the future");
+        expiresAt = d.toISOString();
+      }
       return {
         userId: String(input.userId),
         requestId: input.requestId ? String(input.requestId) : undefined,
         decision: input.decision,
         reason,
+        expiresAt,
       };
     },
+
   )
   .handler(async ({ data, context }) => {
     const { supabase, userId: adminId } = context;
@@ -286,8 +309,10 @@ export const decideVerification = createServerFn({ method: "POST" })
         verification_note: data.reason || null,
         verified_at: approved ? now : null,
         verified_by: approved ? adminId : null,
+        verified_until: approved ? data.expiresAt : null,
       })
       .eq("id", data.userId);
+
     if (pErr) throw new Error(pErr.message);
 
     await supabaseAdmin.from("admin_error_logs").insert({

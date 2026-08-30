@@ -65,6 +65,7 @@ function VerificationPage() {
   const queueFn = useServerFn(getVerificationQueue);
   const decideFn = useServerFn(decideVerification);
   const [reasons, setReasons] = useState<Record<string, string>>({});
+  const [expiries, setExpiries] = useState<Record<string, string>>({});
   const [tab, setTab] = useState<"open" | "all">("open");
 
   const queue = useQuery({
@@ -136,6 +137,8 @@ function VerificationPage() {
             const reason = reasons[r.id] ?? "";
             const busy = decide.isPending;
             const memberStatus = (p?.verification_status ?? "none") as VerificationStatus;
+            const sealExpired =
+              !!p?.verified_until && new Date(p.verified_until).getTime() <= Date.now();
             return (
               <div key={r.id} className={adminCard}>
                 <div className="flex flex-wrap items-start justify-between gap-3">
@@ -145,12 +148,23 @@ function VerificationPage() {
                         {p?.display_name || r.full_name}
                       </h2>
                       <Pill status={r.status} />
-                      {memberStatus === "approved" ? <VerifiedSeal label="Verified" /> : null}
+                      {memberStatus === "approved" && !sealExpired ? (
+                        <VerifiedSeal label="Verified" />
+                      ) : null}
+                      {sealExpired ? (
+                        <span className="rounded-full bg-red-700/10 px-2 py-0.5 text-[11px] text-red-700">
+                          Seal expired
+                        </span>
+                      ) : null}
                     </div>
                     <p className="mt-1 text-xs text-ink/55">
                       {r.member_kind} · legal name {r.full_name} · {r.phone || "no phone"} ·
                       submitted {new Date(r.created_at).toLocaleString("en-AU")}
+                      {p?.verified_until
+                        ? ` · seal ${sealExpired ? "expired" : "expires"} ${new Date(p.verified_until).toLocaleDateString("en-AU")}`
+                        : ""}
                     </p>
+
                     {r.note ? (
                       <p className="mt-2 max-w-[70ch] rounded-[10px] bg-ink/[0.03] p-3 text-xs text-ink/70">
                         {r.note}
@@ -209,6 +223,17 @@ function VerificationPage() {
                     placeholder="Reason (required to decline, ask for more info or revoke)"
                     className="min-w-[280px] flex-1 rounded-[10px] border border-ink/15 bg-surface px-3 py-1.5 text-sm outline-none focus:border-brand"
                   />
+                  <label className="flex items-center gap-1.5 text-xs text-ink/55">
+                    Seal expires
+                    <input
+                      type="date"
+                      value={expiries[r.id] ?? ""}
+                      min={new Date(Date.now() + 86400000).toISOString().slice(0, 10)}
+                      onChange={(e) => setExpiries((s) => ({ ...s, [r.id]: e.target.value }))}
+                      title="Optional — leave blank for a seal that never expires"
+                      className="rounded-[10px] border border-ink/15 bg-surface px-2 py-1.5 text-sm outline-none focus:border-brand"
+                    />
+                  </label>
                   <button
                     className={adminPrimary}
                     disabled={busy}
@@ -218,11 +243,15 @@ function VerificationPage() {
                         requestId: r.id,
                         decision: "approved",
                         reason,
+                        expiresAt: expiries[r.id]
+                          ? new Date(`${expiries[r.id]}T23:59:59`).toISOString()
+                          : null,
                       })
                     }
                   >
                     Grant seal
                   </button>
+
                   <button
                     className={adminBtn}
                     disabled={busy}

@@ -262,6 +262,7 @@ export type Database = {
           verification_status: Database["public"]["Enums"]["verification_status"]
           verified_at: string | null
           verified_by: string | null
+          verified_until: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -277,6 +278,7 @@ export type Database = {
           verification_status?: Database["public"]["Enums"]["verification_status"]
           verified_at?: string | null
           verified_by?: string | null
+          verified_until?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -292,6 +294,7 @@ export type Database = {
           verification_status?: Database["public"]["Enums"]["verification_status"]
           verified_at?: string | null
           verified_by?: string | null
+          verified_until?: string | null
         }
         Relationships: []
       }

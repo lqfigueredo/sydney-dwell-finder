@@ -50,14 +50,23 @@ const MAX_BYTES = 10 * 1024 * 1024;
 function StatusBanner({
   status,
   note,
+  expiresAt,
+  expired,
 }: {
   status: string;
   note: string | null;
+  expiresAt?: string | null;
+  expired?: boolean;
 }) {
-  if (status === "approved")
+  if (status === "approved" && !expired)
     return (
       <div className="rounded-[12px] bg-brand/10 p-4 text-sm text-ink">
         <VerifiedSeal /> <span className="ml-2">Your posts go live without review.</span>
+        <p className="mt-1 text-xs text-ink/60">
+          {expiresAt
+            ? `Your seal is valid until ${new Date(expiresAt).toLocaleDateString("en-AU")} — you'll need to re-request it after that.`
+            : "Your seal has no expiry date."}
+        </p>
       </div>
     );
   const tone =
@@ -66,8 +75,9 @@ function StatusBanner({
       : status === "needs_info"
         ? "bg-accent/25 text-ink"
         : "bg-red-700/10 text-red-700";
-  const label =
-    status === "pending"
+  const label = expired
+    ? `Your verified seal expired on ${new Date(expiresAt!).toLocaleDateString("en-AU")} — send a new request to get it back.`
+    : status === "pending"
       ? "Under review — we'll email you once a moderator has looked at your documents."
       : status === "needs_info"
         ? "A moderator needs more information."
@@ -78,12 +88,13 @@ function StatusBanner({
             : "";
   if (!label) return null;
   return (
-    <div className={`rounded-[12px] p-4 text-sm ${tone}`}>
+    <div className={`rounded-[12px] p-4 text-sm ${expired ? "bg-accent/25 text-ink" : tone}`}>
       <p className="font-medium">{label}</p>
       {note ? <p className="mt-1 opacity-80">Moderator note: {note}</p> : null}
     </div>
   );
 }
+
 
 function GetVerifiedPage() {
   const { user } = useAuth();
@@ -133,7 +144,7 @@ function GetVerifiedPage() {
   });
 
   const s = state.data;
-  const canSubmit = s && s.status !== "pending" && s.status !== "approved";
+  const canSubmit = s && s.status !== "pending" && (s.status !== "approved" || s.expired);
 
   return (
     <div className="min-h-screen bg-canvas text-ink">
@@ -149,7 +160,12 @@ function GetVerifiedPage() {
           {state.isLoading ? (
             <p className="text-sm text-ink/50">Loading your status…</p>
           ) : (
-            <StatusBanner status={s?.status ?? "none"} note={s?.note ?? null} />
+            <StatusBanner
+              status={s?.status ?? "none"}
+              note={s?.note ?? null}
+              expiresAt={s?.expiresAt ?? null}
+              expired={s?.expired ?? false}
+            />
           )}
 
           {s?.request ? (

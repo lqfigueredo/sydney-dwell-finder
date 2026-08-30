@@ -110,7 +110,9 @@ function UsersPage() {
                 {members.map((p) => {
                   const isRowAdmin = adminIds.has(p.id);
                   const off = !!p.deactivated_at;
-                  const verified = !!p.verified_at;
+                  const sealExpired =
+                    !!p.verified_until && new Date(p.verified_until).getTime() <= Date.now();
+                  const verified = !!p.verified_at && !sealExpired;
                   return (
                     <tr key={p.id} className={selected === p.id ? "bg-brand/5" : undefined}>
                       <td className="px-4 py-3">
@@ -134,6 +136,11 @@ function UsersPage() {
                           <span className="rounded-full bg-accent/25 px-2 py-0.5">Admin</span>
                         ) : null}
                         {verified ? <VerifiedSeal label="Verified" /> : null}
+                        {sealExpired ? (
+                          <span className="rounded-full bg-red-700/10 px-2 py-0.5 text-red-700">
+                            Seal expired
+                          </span>
+                        ) : null}
                         {off ? (
                           <span className="rounded-full bg-red-700/10 px-2 py-0.5 text-red-700">
                             Deactivated
@@ -165,15 +172,33 @@ function UsersPage() {
                               alert("Please give a reason before revoking the seal.");
                               return;
                             }
+                            let expiresAt: string | null = null;
+                            if (!verified) {
+                              const raw = prompt(
+                                "Optional expiry date for the seal (YYYY-MM-DD). Leave blank for a seal that never expires — after it expires the member must request verification again.",
+                                "",
+                              );
+                              if (raw === null) return;
+                              if (raw.trim()) {
+                                const d = new Date(`${raw.trim()}T23:59:59`);
+                                if (Number.isNaN(d.getTime()) || d.getTime() <= Date.now()) {
+                                  alert("Please enter a future date as YYYY-MM-DD.");
+                                  return;
+                                }
+                                expiresAt = d.toISOString();
+                              }
+                            }
                             decide.mutate({
                               userId: p.id,
                               decision: verified ? "revoked" : "approved",
                               reason,
+                              expiresAt,
                             });
                           }}
                         >
-                          {verified ? "Revoke seal" : "Verify member"}
+                          {verified ? "Revoke seal" : sealExpired ? "Renew seal" : "Verify member"}
                         </button>{" "}
+
                         <button
                           className={off ? adminBtn : adminDanger}
                           disabled={p.id === user?.id}
