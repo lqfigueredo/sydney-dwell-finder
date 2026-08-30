@@ -257,6 +257,8 @@ export type Database = {
           id: string
           phone: string | null
           suburb: string | null
+          terms_accepted_at: string | null
+          terms_version: string | null
           updated_at: string
           verification_note: string | null
           verification_status: Database["public"]["Enums"]["verification_status"]
@@ -273,6 +275,8 @@ export type Database = {
           id: string
           phone?: string | null
           suburb?: string | null
+          terms_accepted_at?: string | null
+          terms_version?: string | null
           updated_at?: string
           verification_note?: string | null
           verification_status?: Database["public"]["Enums"]["verification_status"]
@@ -289,6 +293,8 @@ export type Database = {
           id?: string
           phone?: string | null
           suburb?: string | null
+          terms_accepted_at?: string | null
+          terms_version?: string | null
           updated_at?: string
           verification_note?: string | null
           verification_status?: Database["public"]["Enums"]["verification_status"]
