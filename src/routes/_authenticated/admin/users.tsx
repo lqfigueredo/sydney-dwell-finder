@@ -138,14 +138,24 @@ function UsersPage() {
                         </button>{" "}
                         <button
                           className={adminBtn}
+                          disabled={decide.isPending}
                           onClick={() => {
-                            if (
-                              verified ||
-                              confirm(
-                                `Give ${p.display_name || "this member"} the verified seal? Their future listings and wanted ads go live without review.`,
-                              )
-                            )
-                              act.mutate({ kind: "user.verify", id: p.id, value: !verified });
+                            const reason = prompt(
+                              verified
+                                ? `Why are you removing ${p.display_name || "this member"}'s verified seal? The member sees this note.`
+                                : `Optional note for ${p.display_name || "this member"} — granting the seal makes their future listings and wanted ads go live without review.`,
+                              "",
+                            );
+                            if (reason === null) return;
+                            if (verified && reason.trim().length < 3) {
+                              alert("Please give a reason before revoking the seal.");
+                              return;
+                            }
+                            decide.mutate({
+                              userId: p.id,
+                              decision: verified ? "revoked" : "approved",
+                              reason,
+                            });
                           }}
                         >
                           {verified ? "Revoke seal" : "Verify member"}
