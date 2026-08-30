@@ -148,7 +148,7 @@ function Dashboard() {
                   key={w.id}
                   to="/wanted/$id"
                   params={{ id: w.id }}
-                  className="flex items-center justify-between rounded-[10px] bg-brand/[0.05] px-3.5 py-2.5 text-sm hover:bg-brand/10"
+                  className="block rounded-[10px] bg-brand/[0.05] px-3.5 py-2.5 text-sm hover:bg-brand/10"
                 >
                   <span className="flex items-center justify-between gap-3">
                     <span className="truncate font-medium">{w.title}</span>
