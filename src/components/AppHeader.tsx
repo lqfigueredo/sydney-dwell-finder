@@ -7,6 +7,7 @@ type Mode = "properties" | "wanted";
 
 export function AppHeader({ mode, onMode }: { mode?: Mode; onMode?: (m: Mode) => void }) {
   const { user } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
 
   const signOut = async () => {
@@ -56,6 +57,14 @@ export function AppHeader({ mode, onMode }: { mode?: Mode; onMode?: (m: Mode) =>
         <div className="ml-auto flex items-center gap-2 text-sm">
           {user ? (
             <>
+              {isAdmin ? (
+                <Link
+                  to="/admin"
+                  className="rounded-[8px] px-3 py-1.5 font-medium text-ink/70 ring-1 ring-ink/15 hover:bg-ink/5"
+                >
+                  Admin
+                </Link>
+              ) : null}
               <Link
                 to="/dashboard"
                 className="rounded-[8px] px-3 py-1.5 font-medium text-ink/70 hover:bg-ink/5"
