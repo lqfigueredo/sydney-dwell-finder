@@ -40,6 +40,18 @@ function UsersPage() {
   const { user } = useAuth();
   const { isAdmin, loading, snapshot, data, act } = useAdminData();
   const detailFn = useServerFn(getAdminUserDetail);
+  const decideFn = useServerFn(decideVerification);
+  const qc = useQueryClient();
+  const decide = useMutation({
+    mutationFn: (input: Parameters<typeof decideFn>[0]["data"]) => decideFn({ data: input }),
+    onSuccess: () => {
+      toast.success("Verification updated");
+      void qc.invalidateQueries({ queryKey: ["admin-snapshot"] });
+      void qc.invalidateQueries({ queryKey: ["verification-queue"] });
+      void qc.invalidateQueries({ queryKey: ["admin-user-detail"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
   const [q, setQ] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
 
