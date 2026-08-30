@@ -15,6 +15,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedAdminRouteRouteImport } from './routes/_authenticated/admin/route'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedGetVerifiedRouteImport } from './routes/_authenticated/get-verified'
 import { Route as AuthenticatedPostListingRouteImport } from './routes/_authenticated/post-listing'
 import { Route as AuthenticatedPostWantedRouteImport } from './routes/_authenticated/post-wanted'
 import { Route as ListingsIdRouteImport } from './routes/listings.$id'
@@ -53,6 +54,12 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedGetVerifiedRoute =
+  AuthenticatedGetVerifiedRouteImport.update({
+    id: '/get-verified',
+    path: '/get-verified',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedPostListingRoute =
   AuthenticatedPostListingRouteImport.update({
     id: '/post-listing',
@@ -103,6 +110,7 @@ export interface FileRoutesByFullPath {
   '/reset-password': typeof ResetPasswordRoute
   '/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/get-verified': typeof AuthenticatedGetVerifiedRoute
   '/post-listing': typeof AuthenticatedPostListingRoute
   '/post-wanted': typeof AuthenticatedPostWantedRoute
   '/listings/$id': typeof ListingsIdRoute
@@ -117,6 +125,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/reset-password': typeof ResetPasswordRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/get-verified': typeof AuthenticatedGetVerifiedRoute
   '/post-listing': typeof AuthenticatedPostListingRoute
   '/post-wanted': typeof AuthenticatedPostWantedRoute
   '/listings/$id': typeof ListingsIdRoute
@@ -134,6 +143,7 @@ export interface FileRoutesById {
   '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/get-verified': typeof AuthenticatedGetVerifiedRoute
   '/_authenticated/post-listing': typeof AuthenticatedPostListingRoute
   '/_authenticated/post-wanted': typeof AuthenticatedPostWantedRoute
   '/listings/$id': typeof ListingsIdRoute
@@ -151,6 +161,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/admin'
     | '/dashboard'
+    | '/get-verified'
     | '/post-listing'
     | '/post-wanted'
     | '/listings/$id'
@@ -165,6 +176,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/reset-password'
     | '/dashboard'
+    | '/get-verified'
     | '/post-listing'
     | '/post-wanted'
     | '/listings/$id'
@@ -181,6 +193,7 @@ export interface FileRouteTypes {
     | '/reset-password'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
+    | '/_authenticated/get-verified'
     | '/_authenticated/post-listing'
     | '/_authenticated/post-wanted'
     | '/listings/$id'
@@ -242,6 +255,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/get-verified': {
+      id: '/_authenticated/get-verified'
+      path: '/get-verified'
+      fullPath: '/get-verified'
+      preLoaderRoute: typeof AuthenticatedGetVerifiedRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/post-listing': {
@@ -326,6 +346,7 @@ const AuthenticatedAdminRouteRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRouteRoute: typeof AuthenticatedAdminRouteRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedGetVerifiedRoute: typeof AuthenticatedGetVerifiedRoute
   AuthenticatedPostListingRoute: typeof AuthenticatedPostListingRoute
   AuthenticatedPostWantedRoute: typeof AuthenticatedPostWantedRoute
 }
@@ -333,6 +354,7 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRouteRoute: AuthenticatedAdminRouteRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedGetVerifiedRoute: AuthenticatedGetVerifiedRoute,
   AuthenticatedPostListingRoute: AuthenticatedPostListingRoute,
   AuthenticatedPostWantedRoute: AuthenticatedPostWantedRoute,
 }

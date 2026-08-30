@@ -115,7 +115,7 @@ function GetVerifiedPage() {
         const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
         const { error } = await supabase.storage
           .from("verification-docs")
-          .upload(path, file, { contentType: file.type || undefined });
+          .upload(path, file, { contentType: file.type || "application/octet-stream" });
         if (error) throw new Error(error.message);
         docs.push({ path, label: file.name.slice(0, 80), mimeType: file.type });
       }
