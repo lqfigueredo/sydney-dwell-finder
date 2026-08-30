@@ -130,13 +130,16 @@ export const submitVerificationRequest = createServerFn({ method: "POST" })
 
     const { data: profile } = await supabase
       .from("profiles")
-      .select("verification_status")
+      .select("verification_status, verified_until")
       .eq("id", userId)
       .maybeSingle();
+    const sealExpired =
+      !!profile?.verified_until && new Date(profile.verified_until).getTime() <= Date.now();
     if (profile?.verification_status === "pending")
       throw new Error("You already have a request under review");
-    if (profile?.verification_status === "approved")
+    if (profile?.verification_status === "approved" && !sealExpired)
       throw new Error("You are already a verified member");
+
 
     for (const d of data.docs) {
       if (!d.path.startsWith(`${userId}/`)) throw new Error("Invalid document path");
