@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { signPublicCovers } from "@/lib/photos.functions";
 import { AppHeader } from "@/components/AppHeader";
 import { GoogleMap, type MapMarker } from "@/components/GoogleMap";
 import {
@@ -79,6 +80,15 @@ function Browse() {
       if (error) throw error;
       return data as Listing[];
     },
+  });
+
+  // Cover photos sit in a private bucket — the server signs the ones whose
+  // listing has passed moderation.
+  const listingIds = (listings.data ?? []).map((l) => l.id);
+  const covers = useQuery({
+    queryKey: ["listing-covers", listingIds.join(",")],
+    enabled: listingIds.length > 0,
+    queryFn: () => signPublicCovers({ data: { listingIds } }),
   });
 
   const wanted = useQuery({
@@ -333,6 +343,7 @@ function Browse() {
                   <ListingCard
                     key={l.id}
                     listing={l}
+                    cover={covers.data?.[l.id] ?? null}
                     active={activeId === l.id}
                     onHover={() => setActiveId(l.id)}
                   />
@@ -386,10 +397,12 @@ function Segmented<T extends string>({
 
 function ListingCard({
   listing,
+  cover,
   active,
   onHover,
 }: {
   listing: Listing;
+  cover: string | null;
   active: boolean;
   onHover: () => void;
 }) {
@@ -403,9 +416,9 @@ function ListingCard({
       }`}
     >
       <div className="blueprint-grid grid aspect-square place-items-center overflow-hidden rounded-[10px] bg-ink/[0.04] ring-1 ring-ink/10">
-        {listing.cover_url ? (
+        {cover ? (
           <img
-            src={listing.cover_url}
+            src={cover}
             alt={listing.title}
             loading="lazy"
             className="size-full object-cover"

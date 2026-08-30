@@ -11,6 +11,7 @@ import {
   adminDanger,
 } from "@/components/admin/AdminShell";
 import { useAdminData } from "@/hooks/use-admin-data";
+import { VerifiedSeal } from "@/components/VerifiedSeal";
 import { useAuth } from "@/hooks/use-auth";
 import { getAdminUserDetail } from "@/lib/admin.functions";
 
@@ -95,6 +96,7 @@ function UsersPage() {
                 {members.map((p) => {
                   const isRowAdmin = adminIds.has(p.id);
                   const off = !!p.deactivated_at;
+                  const verified = !!p.verified_at;
                   return (
                     <tr key={p.id} className={selected === p.id ? "bg-brand/5" : undefined}>
                       <td className="px-4 py-3">
@@ -117,6 +119,7 @@ function UsersPage() {
                         {isRowAdmin ? (
                           <span className="rounded-full bg-accent/25 px-2 py-0.5">Admin</span>
                         ) : null}
+                        {verified ? <VerifiedSeal label="Verified" /> : null}
                         {off ? (
                           <span className="rounded-full bg-red-700/10 px-2 py-0.5 text-red-700">
                             Deactivated
@@ -132,6 +135,20 @@ function UsersPage() {
                           }
                         >
                           {isRowAdmin ? "Revoke admin" : "Make admin"}
+                        </button>{" "}
+                        <button
+                          className={adminBtn}
+                          onClick={() => {
+                            if (
+                              verified ||
+                              confirm(
+                                `Give ${p.display_name || "this member"} the verified seal? Their future listings and wanted ads go live without review.`,
+                              )
+                            )
+                              act.mutate({ kind: "user.verify", id: p.id, value: !verified });
+                          }}
+                        >
+                          {verified ? "Revoke seal" : "Verify member"}
                         </button>{" "}
                         <button
                           className={off ? adminBtn : adminDanger}

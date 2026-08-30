@@ -73,21 +73,32 @@ function PostListing() {
   const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
 
+  /**
+   * Photos stay private in storage — we keep only the object path. Short-lived
+   * signed links are minted at view time once moderation has cleared the listing.
+   */
   const uploadPhotos = async (listingId: string) => {
-    const urls: string[] = [];
+    const paths: string[] = [];
     for (const [i, file] of files.entries()) {
+      if (!file.type.startsWith("image/")) {
+        toast.error(`${file.name} is not an image`);
+        continue;
+      }
+      if (file.size > 8 * 1024 * 1024) {
+        toast.error(`${file.name} is larger than 8 MB`);
+        continue;
+      }
       const path = `${user!.id}/${listingId}/${Date.now()}-${i}-${file.name.replace(/[^\w.-]/g, "_")}`;
-      const { error } = await supabase.storage.from("property-photos").upload(path, file);
+      const { error } = await supabase.storage
+        .from("property-photos")
+        .upload(path, file, { contentType: file.type });
       if (error) {
         toast.error(`Photo upload failed: ${error.message}`);
         continue;
       }
-      const { data } = await supabase.storage
-        .from("property-photos")
-        .createSignedUrl(path, 60 * 60 * 24 * 365);
-      if (data?.signedUrl) urls.push(data.signedUrl);
+      paths.push(path);
     }
-    return urls;
+    return paths;
   };
 
   const submit = async (e: React.FormEvent) => {
@@ -116,21 +127,25 @@ function PostListing() {
           description: form.description,
           features,
         })
-        .select("id")
+        .select("id, moderation_status")
         .single();
       if (error) throw error;
 
       if (files.length) {
-        const urls = await uploadPhotos(data.id);
-        if (urls.length) {
-          await supabase.from("listings").update({ cover_url: urls[0] ?? null }).eq("id", data.id);
+        const paths = await uploadPhotos(data.id);
+        if (paths.length) {
+          await supabase.from("listings").update({ cover_url: paths[0] ?? null }).eq("id", data.id);
           await supabase
             .from("listing_photos")
-            .insert(urls.map((url, i) => ({ listing_id: data.id, url, sort_order: i })));
+            .insert(paths.map((url, i) => ({ listing_id: data.id, url, sort_order: i })));
         }
       }
 
-      toast.success("Submitted — a moderator will review it shortly.");
+      toast.success(
+        data.moderation_status === "approved"
+          ? "Published — your verified seal skipped the review queue."
+          : "Submitted — a moderator will review your listing and photos shortly.",
+      );
       void navigate({ to: "/listings/$id", params: { id: data.id } });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not publish listing");
