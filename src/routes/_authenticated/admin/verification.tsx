@@ -210,6 +210,17 @@ function VerificationPage() {
                     placeholder="Reason (required to decline, ask for more info or revoke)"
                     className="min-w-[280px] flex-1 rounded-[10px] border border-ink/15 bg-surface px-3 py-1.5 text-sm outline-none focus:border-brand"
                   />
+                  <label className="flex items-center gap-1.5 text-xs text-ink/55">
+                    Seal expires
+                    <input
+                      type="date"
+                      value={expiries[r.id] ?? ""}
+                      min={new Date(Date.now() + 86400000).toISOString().slice(0, 10)}
+                      onChange={(e) => setExpiries((s) => ({ ...s, [r.id]: e.target.value }))}
+                      title="Optional — leave blank for a seal that never expires"
+                      className="rounded-[10px] border border-ink/15 bg-surface px-2 py-1.5 text-sm outline-none focus:border-brand"
+                    />
+                  </label>
                   <button
                     className={adminPrimary}
                     disabled={busy}
@@ -219,11 +230,15 @@ function VerificationPage() {
                         requestId: r.id,
                         decision: "approved",
                         reason,
+                        expiresAt: expiries[r.id]
+                          ? new Date(`${expiries[r.id]}T23:59:59`).toISOString()
+                          : null,
                       })
                     }
                   >
                     Grant seal
                   </button>
+
                   <button
                     className={adminBtn}
                     disabled={busy}
