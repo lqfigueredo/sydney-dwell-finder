@@ -37,6 +37,23 @@ type AppRow = {
   listings: { title: string; suburb: string } | null;
 };
 
+function ReviewNote({ status, reason }: { status: string; reason: string | null }) {
+  if (status === "approved") return null;
+  const text =
+    status === "pending"
+      ? "Awaiting review — not visible publicly yet"
+      : status === "paused"
+        ? "Paused by a moderator — hidden from the public site"
+        : `Rejected${reason ? `: ${reason}` : " by a moderator"}`;
+  return (
+    <span
+      className={`mt-1 block text-[11px] ${status === "rejected" ? "text-red-700" : "text-ink/50"}`}
+    >
+      {text}
+    </span>
+  );
+}
+
 function Dashboard() {
   const { user } = useAuth();
   const qc = useQueryClient();
