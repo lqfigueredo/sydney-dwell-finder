@@ -119,12 +119,15 @@ function Dashboard() {
                   key={l.id}
                   to="/listings/$id"
                   params={{ id: l.id }}
-                  className="flex items-center justify-between rounded-[10px] bg-ink/[0.03] px-3.5 py-2.5 text-sm hover:bg-ink/[0.06]"
+                  className="block rounded-[10px] bg-ink/[0.03] px-3.5 py-2.5 text-sm hover:bg-ink/[0.06]"
                 >
-                  <span className="truncate font-medium">{l.title}</span>
-                  <span className="ml-3 shrink-0 text-ink/50">
-                    {priceShort(l.deal, l.price_cents)}
+                  <span className="flex items-center justify-between gap-3">
+                    <span className="truncate font-medium">{l.title}</span>
+                    <span className="shrink-0 text-ink/50">
+                      {priceShort(l.deal, l.price_cents)}
+                    </span>
                   </span>
+                  <ReviewNote status={l.moderation_status} reason={l.rejection_reason} />
                 </Link>
               ))}
             </Panel>
