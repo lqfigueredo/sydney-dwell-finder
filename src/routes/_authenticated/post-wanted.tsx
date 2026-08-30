@@ -84,7 +84,7 @@ function PostWanted() {
         .select("id")
         .single();
       if (error) throw error;
-      toast.success("Your wanted ad is live.");
+      toast.success("Submitted — a moderator will review it shortly.");
       void navigate({ to: "/wanted/$id", params: { id: data.id } });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not publish");
