@@ -4,7 +4,57 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
+import { useServerFn } from "@tanstack/react-start";
 import { formatPrice, priceShort, type Listing, type WantedAd } from "@/lib/marketplace";
+import { VerifiedSeal } from "@/components/VerifiedSeal";
+import { getMyVerification } from "@/lib/verification.functions";
+
+/** Shows where the member stands on verification and links to the request flow. */
+function VerificationCard() {
+  const { user } = useAuth();
+  const statusFn = useServerFn(getMyVerification);
+  const { data } = useQuery({
+    queryKey: ["my-verification", user?.id],
+    enabled: !!user,
+    queryFn: () => statusFn({}),
+  });
+  if (!data) return null;
+
+  if (data.status === "approved") {
+    return (
+      <div className="mt-4 flex flex-wrap items-center gap-2 rounded-[12px] bg-brand/10 px-4 py-3 text-sm">
+        <VerifiedSeal />
+        <span className="text-ink/70">Your listings and wanted ads go live without review.</span>
+      </div>
+    );
+  }
+
+  const copy =
+    data.status === "pending"
+      ? "Your verification request is with a moderator."
+      : data.status === "needs_info"
+        ? "A moderator asked for more information on your verification request."
+        : data.status === "rejected"
+          ? "Your verification request was declined."
+          : data.status === "revoked"
+            ? "Your verified seal was removed."
+            : "Get the verified seal so your posts publish instantly, without photo review.";
+
+  return (
+    <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-[12px] bg-accent/20 px-4 py-3 text-sm">
+      <div>
+        <p className="text-ink/80">{copy}</p>
+        {data.note ? <p className="mt-0.5 text-xs text-ink/55">Moderator note: {data.note}</p> : null}
+      </div>
+      <Link
+        to="/get-verified"
+        className="rounded-[8px] bg-brand px-3 py-1.5 text-xs font-semibold text-brand-foreground"
+      >
+        {data.status === "none" ? "Get verified" : "View request"}
+      </Link>
+    </div>
+  );
+}
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -119,6 +169,7 @@ function Dashboard() {
       <AppHeader />
       <main className="mx-auto max-w-[1100px] px-6 py-8">
         <h1 className="font-display text-3xl font-semibold">My activity</h1>
+        <VerificationCard />
 
         <div className="mt-6 grid grid-cols-12 gap-5">
           <section className="col-span-12 lg:col-span-6">

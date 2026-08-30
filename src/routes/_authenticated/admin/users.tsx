@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { decideVerification } from "@/lib/verification.functions";
 import { useServerFn } from "@tanstack/react-start";
 import {
   AdminDenied,
@@ -40,6 +42,18 @@ function UsersPage() {
   const { user } = useAuth();
   const { isAdmin, loading, snapshot, data, act } = useAdminData();
   const detailFn = useServerFn(getAdminUserDetail);
+  const decideFn = useServerFn(decideVerification);
+  const qc = useQueryClient();
+  const decide = useMutation({
+    mutationFn: (input: Parameters<typeof decideFn>[0]["data"]) => decideFn({ data: input }),
+    onSuccess: () => {
+      toast.success("Verification updated");
+      void qc.invalidateQueries({ queryKey: ["admin-snapshot"] });
+      void qc.invalidateQueries({ queryKey: ["verification-queue"] });
+      void qc.invalidateQueries({ queryKey: ["admin-user-detail"] });
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
   const [q, setQ] = useState("");
   const [selected, setSelected] = useState<string | null>(null);
 
@@ -138,14 +152,24 @@ function UsersPage() {
                         </button>{" "}
                         <button
                           className={adminBtn}
+                          disabled={decide.isPending}
                           onClick={() => {
-                            if (
-                              verified ||
-                              confirm(
-                                `Give ${p.display_name || "this member"} the verified seal? Their future listings and wanted ads go live without review.`,
-                              )
-                            )
-                              act.mutate({ kind: "user.verify", id: p.id, value: !verified });
+                            const reason = prompt(
+                              verified
+                                ? `Why are you removing ${p.display_name || "this member"}'s verified seal? The member sees this note.`
+                                : `Optional note for ${p.display_name || "this member"} — granting the seal makes their future listings and wanted ads go live without review.`,
+                              "",
+                            );
+                            if (reason === null) return;
+                            if (verified && reason.trim().length < 3) {
+                              alert("Please give a reason before revoking the seal.");
+                              return;
+                            }
+                            decide.mutate({
+                              userId: p.id,
+                              decision: verified ? "revoked" : "approved",
+                              reason,
+                            });
                           }}
                         >
                           {verified ? "Revoke seal" : "Verify member"}
