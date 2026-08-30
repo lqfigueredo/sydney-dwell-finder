@@ -137,6 +137,8 @@ function VerificationPage() {
             const reason = reasons[r.id] ?? "";
             const busy = decide.isPending;
             const memberStatus = (p?.verification_status ?? "none") as VerificationStatus;
+            const sealExpired =
+              !!p?.verified_until && new Date(p.verified_until).getTime() <= Date.now();
             return (
               <div key={r.id} className={adminCard}>
                 <div className="flex flex-wrap items-start justify-between gap-3">
@@ -146,12 +148,23 @@ function VerificationPage() {
                         {p?.display_name || r.full_name}
                       </h2>
                       <Pill status={r.status} />
-                      {memberStatus === "approved" ? <VerifiedSeal label="Verified" /> : null}
+                      {memberStatus === "approved" && !sealExpired ? (
+                        <VerifiedSeal label="Verified" />
+                      ) : null}
+                      {sealExpired ? (
+                        <span className="rounded-full bg-red-700/10 px-2 py-0.5 text-[11px] text-red-700">
+                          Seal expired
+                        </span>
+                      ) : null}
                     </div>
                     <p className="mt-1 text-xs text-ink/55">
                       {r.member_kind} · legal name {r.full_name} · {r.phone || "no phone"} ·
                       submitted {new Date(r.created_at).toLocaleString("en-AU")}
+                      {p?.verified_until
+                        ? ` · seal ${sealExpired ? "expired" : "expires"} ${new Date(p.verified_until).toLocaleDateString("en-AU")}`
+                        : ""}
                     </p>
+
                     {r.note ? (
                       <p className="mt-2 max-w-[70ch] rounded-[10px] bg-ink/[0.03] p-3 text-xs text-ink/70">
                         {r.note}
