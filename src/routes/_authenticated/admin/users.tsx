@@ -136,6 +136,11 @@ function UsersPage() {
                           <span className="rounded-full bg-accent/25 px-2 py-0.5">Admin</span>
                         ) : null}
                         {verified ? <VerifiedSeal label="Verified" /> : null}
+                        {sealExpired ? (
+                          <span className="rounded-full bg-red-700/10 px-2 py-0.5 text-red-700">
+                            Seal expired
+                          </span>
+                        ) : null}
                         {off ? (
                           <span className="rounded-full bg-red-700/10 px-2 py-0.5 text-red-700">
                             Deactivated
