@@ -25,16 +25,34 @@ export function CommentThread({ target }: { target: { listingId?: string; wanted
     queryFn: async () => {
       let q = supabase
         .from("comments")
-        .select("id, body, created_at, author_id, profiles:author_id(display_name)")
+        .select("id, body, created_at, author_id")
         .order("created_at", { ascending: true });
       q = target.listingId
         ? q.eq("listing_id", target.listingId)
         : q.eq("wanted_ad_id", target.wantedId!);
       const { data, error } = await q;
       if (error) throw error;
-      return data as unknown as Row[];
+
+      const rows = data ?? [];
+      const ids = [...new Set(rows.map((r) => r.author_id).filter(Boolean))] as string[];
+      const names = new Map<string, string>();
+      if (ids.length) {
+        const { data: profiles } = await supabase
+          .from("profiles")
+          .select("id, display_name")
+          .in("id", ids);
+        for (const p of profiles ?? []) names.set(p.id, p.display_name);
+      }
+
+      return rows.map((r) => ({
+        ...r,
+        profiles: r.author_id
+          ? { display_name: names.get(r.author_id) ?? "Member" }
+          : null,
+      })) as Row[];
     },
   });
+
 
   const post = async (e: React.FormEvent) => {
     e.preventDefault();

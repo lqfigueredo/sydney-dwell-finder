@@ -130,7 +130,7 @@ function PostListing() {
         }
       }
 
-      toast.success("Your property is live.");
+      toast.success("Submitted — a moderator will review it shortly.");
       void navigate({ to: "/listings/$id", params: { id: data.id } });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not publish listing");
