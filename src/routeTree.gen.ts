@@ -20,6 +20,7 @@ import { Route as AuthenticatedPostWantedRouteImport } from './routes/_authentic
 import { Route as ListingsIdRouteImport } from './routes/listings.$id'
 import { Route as WantedIdRouteImport } from './routes/wanted.$id'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
+import { Route as AuthenticatedAdminHealthRouteImport } from './routes/_authenticated/admin/health'
 import { Route as AuthenticatedAdminModerationRouteImport } from './routes/_authenticated/admin/moderation'
 import { Route as AuthenticatedAdminUsersRouteImport } from './routes/_authenticated/admin/users'
 
@@ -78,6 +79,12 @@ const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthenticatedAdminRouteRoute,
 } as any)
+const AuthenticatedAdminHealthRoute =
+  AuthenticatedAdminHealthRouteImport.update({
+    id: '/health',
+    path: '/health',
+    getParentRoute: () => AuthenticatedAdminRouteRoute,
+  } as any)
 const AuthenticatedAdminModerationRoute =
   AuthenticatedAdminModerationRouteImport.update({
     id: '/moderation',
@@ -100,6 +107,7 @@ export interface FileRoutesByFullPath {
   '/post-wanted': typeof AuthenticatedPostWantedRoute
   '/listings/$id': typeof ListingsIdRoute
   '/wanted/$id': typeof WantedIdRoute
+  '/admin/health': typeof AuthenticatedAdminHealthRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -113,6 +121,7 @@ export interface FileRoutesByTo {
   '/post-wanted': typeof AuthenticatedPostWantedRoute
   '/listings/$id': typeof ListingsIdRoute
   '/wanted/$id': typeof WantedIdRoute
+  '/admin/health': typeof AuthenticatedAdminHealthRoute
   '/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/admin/users': typeof AuthenticatedAdminUsersRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -129,6 +138,7 @@ export interface FileRoutesById {
   '/_authenticated/post-wanted': typeof AuthenticatedPostWantedRoute
   '/listings/$id': typeof ListingsIdRoute
   '/wanted/$id': typeof WantedIdRoute
+  '/_authenticated/admin/health': typeof AuthenticatedAdminHealthRoute
   '/_authenticated/admin/moderation': typeof AuthenticatedAdminModerationRoute
   '/_authenticated/admin/users': typeof AuthenticatedAdminUsersRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -145,6 +155,7 @@ export interface FileRouteTypes {
     | '/post-wanted'
     | '/listings/$id'
     | '/wanted/$id'
+    | '/admin/health'
     | '/admin/moderation'
     | '/admin/users'
     | '/admin/'
@@ -158,6 +169,7 @@ export interface FileRouteTypes {
     | '/post-wanted'
     | '/listings/$id'
     | '/wanted/$id'
+    | '/admin/health'
     | '/admin/moderation'
     | '/admin/users'
     | '/admin'
@@ -173,6 +185,7 @@ export interface FileRouteTypes {
     | '/_authenticated/post-wanted'
     | '/listings/$id'
     | '/wanted/$id'
+    | '/_authenticated/admin/health'
     | '/_authenticated/admin/moderation'
     | '/_authenticated/admin/users'
     | '/_authenticated/admin/'
@@ -266,6 +279,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
       parentRoute: typeof AuthenticatedAdminRouteRoute
     }
+    '/_authenticated/admin/health': {
+      id: '/_authenticated/admin/health'
+      path: '/health'
+      fullPath: '/admin/health'
+      preLoaderRoute: typeof AuthenticatedAdminHealthRouteImport
+      parentRoute: typeof AuthenticatedAdminRouteRoute
+    }
     '/_authenticated/admin/moderation': {
       id: '/_authenticated/admin/moderation'
       path: '/moderation'
@@ -284,6 +304,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedAdminRouteRouteChildren {
+  AuthenticatedAdminHealthRoute: typeof AuthenticatedAdminHealthRoute
   AuthenticatedAdminModerationRoute: typeof AuthenticatedAdminModerationRoute
   AuthenticatedAdminUsersRoute: typeof AuthenticatedAdminUsersRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
@@ -291,6 +312,7 @@ interface AuthenticatedAdminRouteRouteChildren {
 
 const AuthenticatedAdminRouteRouteChildren: AuthenticatedAdminRouteRouteChildren =
   {
+    AuthenticatedAdminHealthRoute: AuthenticatedAdminHealthRoute,
     AuthenticatedAdminModerationRoute: AuthenticatedAdminModerationRoute,
     AuthenticatedAdminUsersRoute: AuthenticatedAdminUsersRoute,
     AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
