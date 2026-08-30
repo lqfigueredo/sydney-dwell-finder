@@ -12,6 +12,7 @@ import {
 import { useAdminData } from "@/hooks/use-admin-data";
 import type { ModerationStatus } from "@/lib/admin.functions";
 import { priceShort, propertyKindLabel } from "@/lib/marketplace";
+import { ListingPhotoReview } from "@/components/admin/ListingPhotoReview";
 
 export const Route = createFileRoute("/_authenticated/admin/moderation")({
   head: () => ({
@@ -148,20 +149,6 @@ function ModerationPage() {
             ) : (
               listings.map((l) => (
                 <article key={l.id} className={`${adminCard} flex flex-wrap items-start gap-4`}>
-                  <div className="h-16 w-24 shrink-0 overflow-hidden rounded-[10px] bg-ink/5">
-                    {l.cover_url ? (
-                      <img
-                        src={l.cover_url}
-                        alt={`${l.title} in ${l.suburb}`}
-                        className="h-full w-full object-cover"
-                        loading="lazy"
-                      />
-                    ) : (
-                      <span className="flex h-full items-center justify-center text-[10px] text-ink/40">
-                        No photo
-                      </span>
-                    )}
-                  </div>
                   <div className="min-w-[220px] flex-1">
                     <div className="flex flex-wrap items-center gap-2">
                       <Link
@@ -218,6 +205,17 @@ function ModerationPage() {
                       Delete
                     </button>
                   </div>
+                  <ListingPhotoReview
+                    listingId={l.id}
+                    onRemove={(photoId, reason) =>
+                      act.mutate({
+                        kind: "photo.remove",
+                        id: photoId,
+                        listingId: l.id,
+                        reason: reason || undefined,
+                      })
+                    }
+                  />
                 </article>
               ))
             ))}
