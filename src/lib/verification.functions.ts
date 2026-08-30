@@ -58,7 +58,7 @@ export const getMyVerification = createServerFn({ method: "GET" })
     const [profile, request] = await Promise.all([
       supabase
         .from("profiles")
-        .select("verification_status, verification_note, verified_at")
+        .select("verification_status, verification_note, verified_at, verified_until")
         .eq("id", userId)
         .maybeSingle(),
       supabase
@@ -79,14 +79,20 @@ export const getMyVerification = createServerFn({ method: "GET" })
       docs = await signDocs(rows ?? []);
     }
 
+    const expiresAt = profile.data?.verified_until ?? null;
+    const expired = !!expiresAt && new Date(expiresAt).getTime() <= Date.now();
+
     return {
       status: (profile.data?.verification_status ?? "none") as VerificationStatus,
       note: profile.data?.verification_note ?? null,
       verifiedAt: profile.data?.verified_at ?? null,
+      expiresAt,
+      expired,
       request: request.data,
       docs,
     };
   });
+
 
 /** Member submits (or re-submits) a verification request with uploaded documents. */
 export const submitVerificationRequest = createServerFn({ method: "POST" })
