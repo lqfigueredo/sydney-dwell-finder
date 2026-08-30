@@ -168,6 +168,51 @@ export const runAdminAction = createServerFn({ method: "POST" })
             .eq("id", data.id)
         ).error,
       );
+    } else if (data.kind === "user.verify") {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      fail(
+        (
+          await supabaseAdmin
+            .from("profiles")
+            .update({
+              verified_at: data.value ? new Date().toISOString() : null,
+              verified_by: data.value ? userId : null,
+            })
+            .eq("id", data.id)
+        ).error,
+      );
+    } else if (data.kind === "photo.remove") {
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: photo } = await supabaseAdmin
+        .from("listing_photos")
+        .select("id, url, listing_id")
+        .eq("id", data.id)
+        .maybeSingle();
+      if (!photo) throw new Error("Photo not found");
+
+      if (photo.url && !/^https?:\/\//i.test(photo.url)) {
+        await supabaseAdmin.storage.from("property-photos").remove([photo.url]);
+      }
+      fail((await supabaseAdmin.from("listing_photos").delete().eq("id", data.id)).error);
+
+      const { data: listing } = await supabaseAdmin
+        .from("listings")
+        .select("id, cover_url")
+        .eq("id", photo.listing_id)
+        .maybeSingle();
+
+      const note = `A moderator removed a photo${data.reason ? `: ${data.reason}` : "."}`;
+      const patch: Record<string, unknown> = { photo_removed_note: note };
+      if (listing?.cover_url === photo.url) {
+        const { data: next } = await supabaseAdmin
+          .from("listing_photos")
+          .select("url")
+          .eq("listing_id", photo.listing_id)
+          .order("sort_order")
+          .limit(1);
+        patch["cover_url"] = next?.[0]?.url ?? null;
+      }
+      fail((await supabaseAdmin.from("listings").update(patch).eq("id", photo.listing_id)).error);
     } else if (data.kind === "errors.clear") {
       fail(
         (await supabase.from("admin_error_logs").delete().gte("created_at", "1970-01-01")).error,
