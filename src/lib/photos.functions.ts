@@ -7,7 +7,7 @@ const BUCKET = "property-photos";
 const TTL = 60 * 60; // 1 hour
 
 /** Legacy rows stored a long-lived signed URL; new rows store the storage path. */
-const isAbsolute = (v: string) => /^https?:\/\//i.test(v);
+const isAbsolute = (v: string) => /^(https?:)?\/\//i.test(v) || v.startsWith("/");
 
 async function signMany(paths: string[]): Promise<Record<string, string>> {
   const out: Record<string, string> = {};
