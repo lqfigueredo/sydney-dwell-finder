@@ -127,21 +127,25 @@ function PostListing() {
           description: form.description,
           features,
         })
-        .select("id")
+        .select("id, moderation_status")
         .single();
       if (error) throw error;
 
       if (files.length) {
-        const urls = await uploadPhotos(data.id);
-        if (urls.length) {
-          await supabase.from("listings").update({ cover_url: urls[0] ?? null }).eq("id", data.id);
+        const paths = await uploadPhotos(data.id);
+        if (paths.length) {
+          await supabase.from("listings").update({ cover_url: paths[0] ?? null }).eq("id", data.id);
           await supabase
             .from("listing_photos")
-            .insert(urls.map((url, i) => ({ listing_id: data.id, url, sort_order: i })));
+            .insert(paths.map((url, i) => ({ listing_id: data.id, url, sort_order: i })));
         }
       }
 
-      toast.success("Submitted — a moderator will review it shortly.");
+      toast.success(
+        data.moderation_status === "approved"
+          ? "Published — your verified seal skipped the review queue."
+          : "Submitted — a moderator will review your listing and photos shortly.",
+      );
       void navigate({ to: "/listings/$id", params: { id: data.id } });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not publish listing");
