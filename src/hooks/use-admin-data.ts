@@ -22,6 +22,7 @@ export function useAdminData() {
       toast.success("Done");
       void qc.invalidateQueries({ queryKey: ["admin-snapshot"] });
       void qc.invalidateQueries({ queryKey: ["admin-user-detail"] });
+      void qc.invalidateQueries({ queryKey: ["admin-listing-photos"] });
     },
     onError: (e: Error) => toast.error(e.message),
   });
