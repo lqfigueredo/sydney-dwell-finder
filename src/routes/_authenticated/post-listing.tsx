@@ -268,9 +268,13 @@ function PostListing() {
                 <Field
                   label="Street address"
                   value={form.address}
-                  onChange={(v) => set("address", v)}
+                  onChange={(v) => {
+                    set("address", v);
+                    setPinSource("address");
+                  }}
                   placeholder="12/48 Bourke Street"
                   required
+                  inputRef={addressRef}
                 />
                 <div className="grid grid-cols-2 gap-3">
                   <label className="block">
@@ -279,10 +283,14 @@ function PostListing() {
                       value={form.suburb}
                       onChange={(e) => {
                         set("suburb", e.target.value);
-                        setPin(SUBURB_COORDS[e.target.value] ?? null);
+                        setPinSource("address");
+                        if (!form.address.trim()) {
+                          setPin(SUBURB_COORDS[e.target.value] ?? null);
+                        }
                       }}
                       className="mt-1 w-full rounded-[10px] bg-ink/[0.04] px-3 py-2 text-sm outline-none ring-1 ring-transparent focus:ring-brand/40"
                     >
+
                       {SUBURB_NAMES.map((s) => (
                         <option key={s}>{s}</option>
                       ))}
