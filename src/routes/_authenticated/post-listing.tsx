@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
-import { GoogleMap } from "@/components/GoogleMap";
+import { GoogleMap, geocodeAddress, loadGoogleMaps } from "@/components/GoogleMap";
+
 import {
   PROPERTY_KINDS,
   SUBURB_COORDS,
@@ -68,10 +69,85 @@ function PostListing() {
   const [pin, setPin] = useState<{ lat: number; lng: number } | null>(
     SUBURB_COORDS["Surry Hills"] ?? null,
   );
+  // "address" = pin follows what the user typed; "manual" = they moved it themselves.
+  const [pinSource, setPinSource] = useState<"address" | "manual">("address");
+  const [geoState, setGeoState] = useState<{
+    status: "idle" | "loading" | "found" | "notfound";
+    label?: string;
+  }>({ status: "idle" });
+  const addressRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
 
   const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
+
+  // Google Places suggestions on the street address field (Australia only).
+  useEffect(() => {
+    let autocomplete: any;
+    let cancelled = false;
+    loadGoogleMaps()
+      .then((google: any) => {
+        if (cancelled || !google?.maps?.places || !addressRef.current) return;
+        autocomplete = new google.maps.places.Autocomplete(addressRef.current, {
+          componentRestrictions: { country: "au" },
+          fields: ["address_components", "formatted_address", "geometry", "name"],
+        });
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          if (!place?.geometry?.location) return;
+          const comps: any[] = place.address_components ?? [];
+          const streetNumber = comps.find((c) => c.types.includes("street_number"))?.short_name;
+          const route = comps.find((c) => c.types.includes("route"))?.long_name;
+          const locality = comps.find(
+            (c) => c.types.includes("locality") || c.types.includes("sublocality"),
+          )?.long_name;
+          const postcode = comps.find((c) => c.types.includes("postal_code"))?.long_name;
+
+          setForm((f) => ({
+            ...f,
+            address: [streetNumber, route].filter(Boolean).join(" ") || place.name || f.address,
+            ...(locality && SUBURB_NAMES.includes(locality) ? { suburb: locality } : {}),
+            ...(postcode ? { postcode } : {}),
+          }));
+          setPinSource("address");
+          setPin({ lat: place.geometry.location.lat(), lng: place.geometry.location.lng() });
+          setGeoState({ status: "found", label: place.formatted_address ?? "" });
+        });
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+      const google = (window as any).google;
+      if (autocomplete && google?.maps?.event) {
+        google.maps.event.clearInstanceListeners(autocomplete);
+      }
+    };
+  }, []);
+
+  // Whenever the typed address changes, re-pin to that address (debounced).
+  useEffect(() => {
+    if (pinSource !== "address") return;
+    const address = form.address.trim();
+    if (!address) {
+      setGeoState({ status: "idle" });
+      setPin(SUBURB_COORDS[form.suburb] ?? null);
+      return;
+    }
+    const query = `${address}, ${form.suburb} NSW ${form.postcode ?? ""}, Australia`;
+    setGeoState({ status: "loading" });
+    const timer = setTimeout(async () => {
+      const result = await geocodeAddress(query);
+      if (result) {
+        setPin({ lat: result.lat, lng: result.lng });
+        setGeoState({ status: "found", label: result.formattedAddress });
+      } else {
+        setPin(SUBURB_COORDS[form.suburb] ?? null);
+        setGeoState({ status: "notfound" });
+      }
+    }, 700);
+    return () => clearTimeout(timer);
+  }, [form.address, form.suburb, form.postcode, pinSource]);
+
 
   /**
    * Photos stay private in storage — we keep only the object path. Short-lived
@@ -192,9 +268,13 @@ function PostListing() {
                 <Field
                   label="Street address"
                   value={form.address}
-                  onChange={(v) => set("address", v)}
+                  onChange={(v) => {
+                    set("address", v);
+                    setPinSource("address");
+                  }}
                   placeholder="12/48 Bourke Street"
                   required
+                  inputRef={addressRef}
                 />
                 <div className="grid grid-cols-2 gap-3">
                   <label className="block">
@@ -203,10 +283,14 @@ function PostListing() {
                       value={form.suburb}
                       onChange={(e) => {
                         set("suburb", e.target.value);
-                        setPin(SUBURB_COORDS[e.target.value] ?? null);
+                        setPinSource("address");
+                        if (!form.address.trim()) {
+                          setPin(SUBURB_COORDS[e.target.value] ?? null);
+                        }
                       }}
                       className="mt-1 w-full rounded-[10px] bg-ink/[0.04] px-3 py-2 text-sm outline-none ring-1 ring-transparent focus:ring-brand/40"
                     >
+
                       {SUBURB_NAMES.map((s) => (
                         <option key={s}>{s}</option>
                       ))}
@@ -327,9 +411,10 @@ function PostListing() {
 
           <div className="col-span-12 space-y-4 lg:col-span-5">
             <div className="rounded-xl bg-canvas p-5 ring-1 ring-ink/10">
-              <Label>Pin the location</Label>
+              <Label>Location on the map</Label>
               <p className="mt-1 text-[12px] text-ink/45">
-                Click the map to move the pin. Scroll to zoom, drag to pan.
+                The pin follows the street address you enter. You can still click or drag it to
+                fine-tune.
               </p>
               <div className="mt-3 h-[380px]">
                 <GoogleMap
@@ -337,19 +422,48 @@ function PostListing() {
                   zoom={pin ? 16 : 13}
                   markers={[]}
                   fitBounds={false}
-                  onMapClick={(lat, lng) => setPin({ lat, lng })}
+                  onMapClick={(lat, lng) => {
+                    setPinSource("manual");
+                    setPin({ lat, lng });
+                  }}
                   {...(pin
                     ? {
                         draggableMarker: {
                           lat: pin.lat,
                           lng: pin.lng,
-                          onDragEnd: (lat: number, lng: number) => setPin({ lat, lng }),
+                          onDragEnd: (lat: number, lng: number) => {
+                            setPinSource("manual");
+                            setPin({ lat, lng });
+                          },
                         },
                       }
                     : {})}
                 />
               </div>
+              <div className="mt-2 flex items-center justify-between gap-3 text-[12px]">
+                <span className="text-ink/55">
+                  {pinSource === "manual"
+                    ? "Pin placed manually."
+                    : geoState.status === "loading"
+                      ? "Locating address…"
+                      : geoState.status === "found"
+                        ? `Pinned to ${geoState.label}`
+                        : geoState.status === "notfound"
+                          ? "We couldn't find that address — drag the pin to the right spot."
+                          : "Enter a street address to place the pin."}
+                </span>
+                {pinSource === "manual" && (
+                  <button
+                    type="button"
+                    onClick={() => setPinSource("address")}
+                    className="shrink-0 font-semibold text-brand hover:underline"
+                  >
+                    Reset to address
+                  </button>
+                )}
+              </div>
             </div>
+
 
             <button
               disabled={busy}
@@ -379,6 +493,7 @@ function Field({
   type = "text",
   placeholder,
   required,
+  inputRef,
 }: {
   label: string;
   value: string;
@@ -386,11 +501,13 @@ function Field({
   type?: string;
   placeholder?: string;
   required?: boolean;
+  inputRef?: React.RefObject<HTMLInputElement | null>;
 }) {
   return (
     <label className="block">
       <Label>{label}</Label>
       <input
+        ref={inputRef}
         type={type}
         value={value}
         required={required}
@@ -399,5 +516,6 @@ function Field({
         className="mt-1 w-full rounded-[10px] bg-ink/[0.04] px-3 py-2 text-sm outline-none ring-1 ring-transparent placeholder:text-ink/35 focus:ring-brand/40"
       />
     </label>
+
   );
 }
