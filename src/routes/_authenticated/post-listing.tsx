@@ -69,10 +69,85 @@ function PostListing() {
   const [pin, setPin] = useState<{ lat: number; lng: number } | null>(
     SUBURB_COORDS["Surry Hills"] ?? null,
   );
+  // "address" = pin follows what the user typed; "manual" = they moved it themselves.
+  const [pinSource, setPinSource] = useState<"address" | "manual">("address");
+  const [geoState, setGeoState] = useState<{
+    status: "idle" | "loading" | "found" | "notfound";
+    label?: string;
+  }>({ status: "idle" });
+  const addressRef = useRef<HTMLInputElement>(null);
   const [files, setFiles] = useState<File[]>([]);
 
   const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
     setForm((f) => ({ ...f, [k]: v }));
+
+  // Google Places suggestions on the street address field (Australia only).
+  useEffect(() => {
+    let autocomplete: any;
+    let cancelled = false;
+    loadGoogleMaps()
+      .then((google: any) => {
+        if (cancelled || !google?.maps?.places || !addressRef.current) return;
+        autocomplete = new google.maps.places.Autocomplete(addressRef.current, {
+          componentRestrictions: { country: "au" },
+          fields: ["address_components", "formatted_address", "geometry", "name"],
+        });
+        autocomplete.addListener("place_changed", () => {
+          const place = autocomplete.getPlace();
+          if (!place?.geometry?.location) return;
+          const comps: any[] = place.address_components ?? [];
+          const streetNumber = comps.find((c) => c.types.includes("street_number"))?.short_name;
+          const route = comps.find((c) => c.types.includes("route"))?.long_name;
+          const locality = comps.find(
+            (c) => c.types.includes("locality") || c.types.includes("sublocality"),
+          )?.long_name;
+          const postcode = comps.find((c) => c.types.includes("postal_code"))?.long_name;
+
+          setForm((f) => ({
+            ...f,
+            address: [streetNumber, route].filter(Boolean).join(" ") || place.name || f.address,
+            ...(locality && SUBURB_NAMES.includes(locality) ? { suburb: locality } : {}),
+            ...(postcode ? { postcode } : {}),
+          }));
+          setPinSource("address");
+          setPin({ lat: place.geometry.location.lat(), lng: place.geometry.location.lng() });
+          setGeoState({ status: "found", label: place.formatted_address ?? "" });
+        });
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+      const google = (window as any).google;
+      if (autocomplete && google?.maps?.event) {
+        google.maps.event.clearInstanceListeners(autocomplete);
+      }
+    };
+  }, []);
+
+  // Whenever the typed address changes, re-pin to that address (debounced).
+  useEffect(() => {
+    if (pinSource !== "address") return;
+    const address = form.address.trim();
+    if (!address) {
+      setGeoState({ status: "idle" });
+      setPin(SUBURB_COORDS[form.suburb] ?? null);
+      return;
+    }
+    const query = `${address}, ${form.suburb} NSW ${form.postcode ?? ""}, Australia`;
+    setGeoState({ status: "loading" });
+    const timer = setTimeout(async () => {
+      const result = await geocodeAddress(query);
+      if (result) {
+        setPin({ lat: result.lat, lng: result.lng });
+        setGeoState({ status: "found", label: result.formattedAddress });
+      } else {
+        setPin(SUBURB_COORDS[form.suburb] ?? null);
+        setGeoState({ status: "notfound" });
+      }
+    }, 700);
+    return () => clearTimeout(timer);
+  }, [form.address, form.suburb, form.postcode, pinSource]);
+
 
   /**
    * Photos stay private in storage — we keep only the object path. Short-lived
