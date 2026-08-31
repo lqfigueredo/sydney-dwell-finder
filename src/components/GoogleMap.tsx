@@ -32,7 +32,7 @@ export type GoogleMapProps = {
 /* eslint-disable @typescript-eslint/no-explicit-any */
 let loadPromise: Promise<any> | null = null;
 
-function loadGoogleMaps(): Promise<any> {
+export function loadGoogleMaps(): Promise<any> {
   if (typeof window === "undefined") return Promise.resolve();
   const win = window as any;
   if (win.google?.maps) return Promise.resolve(win.google);
@@ -53,13 +53,42 @@ function loadGoogleMaps(): Promise<any> {
     const script = document.createElement("script");
     script.src = `https://maps.googleapis.com/maps/api/js?key=${encodeURIComponent(
       key,
-    )}&loading=async&callback=${callbackName}&channel=${encodeURIComponent(channel)}`;
+    )}&loading=async&libraries=places&callback=${callbackName}&channel=${encodeURIComponent(channel)}`;
     script.async = true;
     script.onerror = () => reject(new Error("Google Maps script failed to load"));
     document.head.appendChild(script);
   });
   return loadPromise;
 }
+
+export type GeocodeResult = {
+  lat: number;
+  lng: number;
+  formattedAddress: string;
+};
+
+/** Look up a free-text address and return the best match, or null. */
+export async function geocodeAddress(address: string): Promise<GeocodeResult | null> {
+  const google = await loadGoogleMaps();
+  if (!google?.maps) return null;
+  const geocoder = new google.maps.Geocoder();
+  try {
+    const res: any = await geocoder.geocode({
+      address,
+      componentRestrictions: { country: "AU" },
+    });
+    const first = res?.results?.[0];
+    if (!first) return null;
+    return {
+      lat: first.geometry.location.lat(),
+      lng: first.geometry.location.lng(),
+      formattedAddress: first.formatted_address as string,
+    };
+  } catch {
+    return null;
+  }
+}
+
 
 function pinIcon(kind: MapMarkerKind): any {
   const fill = kind === "offered" ? "#0F6F6C" : "#E4B363";
