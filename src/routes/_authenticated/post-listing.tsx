@@ -1,10 +1,11 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
-import { GoogleMap } from "@/components/GoogleMap";
+import { GoogleMap, geocodeAddress, loadGoogleMaps } from "@/components/GoogleMap";
+
 import {
   PROPERTY_KINDS,
   SUBURB_COORDS,
