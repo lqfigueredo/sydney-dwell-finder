@@ -411,9 +411,10 @@ function PostListing() {
 
           <div className="col-span-12 space-y-4 lg:col-span-5">
             <div className="rounded-xl bg-canvas p-5 ring-1 ring-ink/10">
-              <Label>Pin the location</Label>
+              <Label>Location on the map</Label>
               <p className="mt-1 text-[12px] text-ink/45">
-                Click the map to move the pin. Scroll to zoom, drag to pan.
+                The pin follows the street address you enter. You can still click or drag it to
+                fine-tune.
               </p>
               <div className="mt-3 h-[380px]">
                 <GoogleMap
@@ -421,19 +422,48 @@ function PostListing() {
                   zoom={pin ? 16 : 13}
                   markers={[]}
                   fitBounds={false}
-                  onMapClick={(lat, lng) => setPin({ lat, lng })}
+                  onMapClick={(lat, lng) => {
+                    setPinSource("manual");
+                    setPin({ lat, lng });
+                  }}
                   {...(pin
                     ? {
                         draggableMarker: {
                           lat: pin.lat,
                           lng: pin.lng,
-                          onDragEnd: (lat: number, lng: number) => setPin({ lat, lng }),
+                          onDragEnd: (lat: number, lng: number) => {
+                            setPinSource("manual");
+                            setPin({ lat, lng });
+                          },
                         },
                       }
                     : {})}
                 />
               </div>
+              <div className="mt-2 flex items-center justify-between gap-3 text-[12px]">
+                <span className="text-ink/55">
+                  {pinSource === "manual"
+                    ? "Pin placed manually."
+                    : geoState.status === "loading"
+                      ? "Locating address…"
+                      : geoState.status === "found"
+                        ? `Pinned to ${geoState.label}`
+                        : geoState.status === "notfound"
+                          ? "We couldn't find that address — drag the pin to the right spot."
+                          : "Enter a street address to place the pin."}
+                </span>
+                {pinSource === "manual" && (
+                  <button
+                    type="button"
+                    onClick={() => setPinSource("address")}
+                    className="shrink-0 font-semibold text-brand hover:underline"
+                  >
+                    Reset to address
+                  </button>
+                )}
+              </div>
             </div>
+
 
             <button
               disabled={busy}
