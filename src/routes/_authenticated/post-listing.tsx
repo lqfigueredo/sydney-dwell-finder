@@ -493,6 +493,7 @@ function Field({
   type = "text",
   placeholder,
   required,
+  inputRef,
 }: {
   label: string;
   value: string;
@@ -500,11 +501,13 @@ function Field({
   type?: string;
   placeholder?: string;
   required?: boolean;
+  inputRef?: React.RefObject<HTMLInputElement | null>;
 }) {
   return (
     <label className="block">
       <Label>{label}</Label>
       <input
+        ref={inputRef}
         type={type}
         value={value}
         required={required}
@@ -513,5 +516,6 @@ function Field({
         className="mt-1 w-full rounded-[10px] bg-ink/[0.04] px-3 py-2 text-sm outline-none ring-1 ring-transparent placeholder:text-ink/35 focus:ring-brand/40"
       />
     </label>
+
   );
 }
