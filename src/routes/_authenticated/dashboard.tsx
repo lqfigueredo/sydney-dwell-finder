@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
+import { useMyProfile } from "@/components/ProfileGate";
 import { useServerFn } from "@tanstack/react-start";
 import { formatPrice, priceShort, type Listing, type WantedAd } from "@/lib/marketplace";
 import { VerifiedSeal } from "@/components/VerifiedSeal";
@@ -205,6 +206,7 @@ function Dashboard() {
       <AppHeader />
       <main className="mx-auto max-w-[1100px] px-6 py-8">
         <h1 className="font-display text-3xl font-semibold">My activity</h1>
+        <ProfileStatus />
         <VerificationCard />
         <TermsStatus />
 
@@ -358,4 +360,23 @@ function Panel({
 
 function Empty({ children }: { children: React.ReactNode }) {
   return <p className="text-[13px] text-ink/45">{children}</p>;
+}
+
+/** Nudge members to finish their profile before they try to publish. */
+function ProfileStatus() {
+  const profile = useMyProfile();
+  const p = profile.data;
+  if (!p || p.complete) return null;
+  return (
+    <div className="mt-4 rounded-[12px] bg-accent/25 p-4 text-sm">
+      <p className="font-medium">Complete your profile to publish</p>
+      <p className="mt-1 text-ink/70">Still needed: {p.missing.join(", ")}.</p>
+      <Link
+        to="/profile"
+        className="mt-3 inline-block rounded-[10px] bg-brand px-4 py-2 text-[13px] font-semibold text-brand-foreground hover:bg-brand/90"
+      >
+        Go to my profile
+      </Link>
+    </div>
+  );
 }
