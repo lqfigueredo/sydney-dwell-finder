@@ -19,6 +19,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedGetVerifiedRouteImport } from './routes/_authenticated/get-verified'
 import { Route as AuthenticatedPostListingRouteImport } from './routes/_authenticated/post-listing'
 import { Route as AuthenticatedPostWantedRouteImport } from './routes/_authenticated/post-wanted'
+import { Route as AuthenticatedProfileRouteImport } from './routes/_authenticated/profile'
 import { Route as ListingsIdRouteImport } from './routes/listings.$id'
 import { Route as WantedIdRouteImport } from './routes/wanted.$id'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin/index'
@@ -78,6 +79,11 @@ const AuthenticatedPostWantedRoute = AuthenticatedPostWantedRouteImport.update({
   path: '/post-wanted',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedProfileRoute = AuthenticatedProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ListingsIdRoute = ListingsIdRouteImport.update({
   id: '/listings/$id',
   path: '/listings/$id',
@@ -127,6 +133,7 @@ export interface FileRoutesByFullPath {
   '/get-verified': typeof AuthenticatedGetVerifiedRoute
   '/post-listing': typeof AuthenticatedPostListingRoute
   '/post-wanted': typeof AuthenticatedPostWantedRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/listings/$id': typeof ListingsIdRoute
   '/wanted/$id': typeof WantedIdRoute
   '/admin/health': typeof AuthenticatedAdminHealthRoute
@@ -144,6 +151,7 @@ export interface FileRoutesByTo {
   '/get-verified': typeof AuthenticatedGetVerifiedRoute
   '/post-listing': typeof AuthenticatedPostListingRoute
   '/post-wanted': typeof AuthenticatedPostWantedRoute
+  '/profile': typeof AuthenticatedProfileRoute
   '/listings/$id': typeof ListingsIdRoute
   '/wanted/$id': typeof WantedIdRoute
   '/admin/health': typeof AuthenticatedAdminHealthRoute
@@ -164,6 +172,7 @@ export interface FileRoutesById {
   '/_authenticated/get-verified': typeof AuthenticatedGetVerifiedRoute
   '/_authenticated/post-listing': typeof AuthenticatedPostListingRoute
   '/_authenticated/post-wanted': typeof AuthenticatedPostWantedRoute
+  '/_authenticated/profile': typeof AuthenticatedProfileRoute
   '/listings/$id': typeof ListingsIdRoute
   '/wanted/$id': typeof WantedIdRoute
   '/_authenticated/admin/health': typeof AuthenticatedAdminHealthRoute
@@ -184,6 +193,7 @@ export interface FileRouteTypes {
     | '/get-verified'
     | '/post-listing'
     | '/post-wanted'
+    | '/profile'
     | '/listings/$id'
     | '/wanted/$id'
     | '/admin/health'
@@ -201,6 +211,7 @@ export interface FileRouteTypes {
     | '/get-verified'
     | '/post-listing'
     | '/post-wanted'
+    | '/profile'
     | '/listings/$id'
     | '/wanted/$id'
     | '/admin/health'
@@ -220,6 +231,7 @@ export interface FileRouteTypes {
     | '/_authenticated/get-verified'
     | '/_authenticated/post-listing'
     | '/_authenticated/post-wanted'
+    | '/_authenticated/profile'
     | '/listings/$id'
     | '/wanted/$id'
     | '/_authenticated/admin/health'
@@ -311,6 +323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPostWantedRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/profile': {
+      id: '/_authenticated/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof AuthenticatedProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/listings/$id': {
       id: '/listings/$id'
       path: '/listings/$id'
@@ -391,6 +410,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedGetVerifiedRoute: typeof AuthenticatedGetVerifiedRoute
   AuthenticatedPostListingRoute: typeof AuthenticatedPostListingRoute
   AuthenticatedPostWantedRoute: typeof AuthenticatedPostWantedRoute
+  AuthenticatedProfileRoute: typeof AuthenticatedProfileRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -399,6 +419,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedGetVerifiedRoute: AuthenticatedGetVerifiedRoute,
   AuthenticatedPostListingRoute: AuthenticatedPostListingRoute,
   AuthenticatedPostWantedRoute: AuthenticatedPostWantedRoute,
+  AuthenticatedProfileRoute: AuthenticatedProfileRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
