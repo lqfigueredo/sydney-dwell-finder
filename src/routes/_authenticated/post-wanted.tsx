@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
+import { ProfileGate } from "@/components/ProfileGate";
 import {
   PROPERTY_KINDS,
   SUBURB_COORDS,
@@ -106,6 +107,7 @@ function PostWanted() {
           Owners and agents can apply to you with a matching property.
         </p>
 
+        <ProfileGate>
         <form onSubmit={submit} className="mt-6 space-y-4">
           <div className="rounded-xl bg-canvas p-5 ring-1 ring-ink/10">
             <div className="flex rounded-[10px] bg-ink/[0.04] p-1">
@@ -261,6 +263,7 @@ function PostWanted() {
             {busy ? "Publishing…" : "Publish wanted ad"}
           </button>
         </form>
+        </ProfileGate>
       </main>
     </div>
   );
