@@ -66,6 +66,12 @@ export function AppHeader({ mode, onMode }: { mode?: Mode; onMode?: (m: Mode) =>
                 </Link>
               ) : null}
               <Link
+                to="/profile"
+                className="rounded-[8px] px-3 py-1.5 font-medium text-ink/70 hover:bg-ink/5"
+              >
+                My profile
+              </Link>
+              <Link
                 to="/dashboard"
                 className="rounded-[8px] px-3 py-1.5 font-medium text-ink/70 hover:bg-ink/5"
               >

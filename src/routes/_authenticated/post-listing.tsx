@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { AppHeader } from "@/components/AppHeader";
 import { GoogleMap, geocodeAddress, loadGoogleMaps } from "@/components/GoogleMap";
+import { ProfileGate } from "@/components/ProfileGate";
 
 import {
   PROPERTY_KINDS,
@@ -239,6 +240,7 @@ function PostListing() {
           Drop a pin on the map so seekers find you in the right pocket of Sydney.
         </p>
 
+        <ProfileGate>
         <form onSubmit={submit} className="mt-6 grid grid-cols-12 gap-5">
           <div className="col-span-12 space-y-4 lg:col-span-7">
             <div className="rounded-xl bg-canvas p-5 ring-1 ring-ink/10">
@@ -473,6 +475,7 @@ function PostListing() {
             </button>
           </div>
         </form>
+        </ProfileGate>
       </main>
     </div>
   );

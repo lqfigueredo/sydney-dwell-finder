@@ -247,14 +247,44 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_documents: {
+        Row: {
+          created_at: string
+          id: string
+          label: string
+          mime_type: string | null
+          path: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          label?: string
+          mime_type?: string | null
+          path: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          label?: string
+          mime_type?: string | null
+          path?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
+          abn: string | null
           avatar_url: string | null
           bio: string | null
+          company_name: string | null
           created_at: string
           deactivated_at: string | null
           display_name: string
           id: string
+          is_business: boolean
           phone: string | null
           suburb: string | null
           terms_accepted_at: string | null
@@ -267,12 +297,15 @@ export type Database = {
           verified_until: string | null
         }
         Insert: {
+          abn?: string | null
           avatar_url?: string | null
           bio?: string | null
+          company_name?: string | null
           created_at?: string
           deactivated_at?: string | null
           display_name?: string
           id: string
+          is_business?: boolean
           phone?: string | null
           suburb?: string | null
           terms_accepted_at?: string | null
@@ -285,12 +318,15 @@ export type Database = {
           verified_until?: string | null
         }
         Update: {
+          abn?: string | null
           avatar_url?: string | null
           bio?: string | null
+          company_name?: string | null
           created_at?: string
           deactivated_at?: string | null
           display_name?: string
           id?: string
+          is_business?: boolean
           phone?: string | null
           suburb?: string | null
           terms_accepted_at?: string | null
@@ -523,6 +559,7 @@ export type Database = {
         Returns: boolean
       }
       is_active_account: { Args: { _user_id: string }; Returns: boolean }
+      is_profile_complete: { Args: { _user_id: string }; Returns: boolean }
       is_verified_member: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {

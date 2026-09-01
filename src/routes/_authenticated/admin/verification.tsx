@@ -133,7 +133,10 @@ function VerificationPage() {
         <div className="mt-5 space-y-4">
           {rows.map((r) => {
             const p = profileById.get(r.user_id);
-            const docs = queue.data?.docsByRequest[r.id] ?? [];
+            const docs = [
+              ...(queue.data?.docsByRequest[r.id] ?? []),
+              ...(queue.data?.profileDocsByUser?.[r.user_id] ?? []),
+            ];
             const reason = reasons[r.id] ?? "";
             const busy = decide.isPending;
             const memberStatus = (p?.verification_status ?? "none") as VerificationStatus;

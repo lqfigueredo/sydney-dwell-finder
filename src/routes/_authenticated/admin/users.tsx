@@ -123,6 +123,9 @@ function UsersPage() {
                         >
                           {p.display_name || "Member"}
                         </button>
+                        {p.is_business && p.company_name ? (
+                          <div className="text-xs text-ink/60">{p.company_name}</div>
+                        ) : null}
                         <div className="text-xs text-ink/50">
                           {p.suburb || "No suburb"} · joined{" "}
                           {new Date(p.created_at).toLocaleDateString("en-AU")}
@@ -137,6 +140,11 @@ function UsersPage() {
                           <span className="rounded-full bg-accent/25 px-2 py-0.5">Admin</span>
                         ) : null}
                         {verified ? <VerifiedSeal label="Verified" /> : null}
+                        {!p.avatar_url || !p.phone ? (
+                          <span className="rounded-full bg-ink/[0.06] px-2 py-0.5 text-ink/60">
+                            Profile incomplete
+                          </span>
+                        ) : null}
                         {sealExpired ? (
                           <span className="rounded-full bg-red-700/10 px-2 py-0.5 text-red-700">
                             Seal expired

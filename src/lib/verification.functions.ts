@@ -230,8 +230,34 @@ export const getVerificationQueue = createServerFn({ method: "GET" })
       (docsByRequest[d.request_id] ??= []).push(s);
     }
 
+    // Members also upload an ID document when completing their profile —
+    // surface it so moderators don't ask for it twice.
+    const { data: profileDocRows } = userIds.length
+      ? await supabase
+          .from("profile_documents")
+          .select("id, user_id, label, path, mime_type")
+          .in("user_id", userIds)
+      : { data: [] as any[] };
+
+    const signedProfileDocs = await signDocs(
+      (profileDocRows ?? []).map((d: any) => ({
+        id: d.id,
+        label: d.label,
+        path: d.path,
+        mime_type: d.mime_type,
+      })),
+    );
+    const signedProfileById = new Map(signedProfileDocs.map((s) => [s.id, s]));
+    const profileDocsByUser: Record<string, VerificationDoc[]> = {};
+    for (const d of (profileDocRows ?? []) as any[]) {
+      const s = signedProfileById.get(d.id);
+      if (!s) continue;
+      (profileDocsByUser[d.user_id] ??= []).push(s);
+    }
+
     return {
       requests: requests ?? [],
+      profileDocsByUser,
       profiles: (profiles.data ?? []) as {
         id: string;
         display_name: string;
