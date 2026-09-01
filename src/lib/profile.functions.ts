@@ -152,7 +152,7 @@ export const saveMyProfile = createServerFn({ method: "POST" })
     if (data.document && !data.document.path.startsWith(`${userId}/`))
       throw new Error("Invalid document path");
 
-    const update: Record<string, unknown> = {
+    const update = {
       display_name: data.displayName,
       phone: data.phone,
       suburb: data.suburb || null,
@@ -160,8 +160,8 @@ export const saveMyProfile = createServerFn({ method: "POST" })
       is_business: data.isBusiness,
       company_name: data.isBusiness ? data.companyName : null,
       abn: data.isBusiness ? data.abn : null,
+      ...(data.avatarPath ? { avatar_url: data.avatarPath } : {}),
     };
-    if (data.avatarPath) update["avatar_url"] = data.avatarPath;
 
     const { error } = await supabase.from("profiles").update(update).eq("id", userId);
     if (error) throw new Error(error.message);
